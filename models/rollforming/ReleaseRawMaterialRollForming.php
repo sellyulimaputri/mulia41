@@ -109,12 +109,7 @@ class ReleaseRawMaterialRollForming extends \yii\db\ActiveRecord
                 return 'Unknown';
         }
     }
-
-    public static function isAlreadyReleased($id_worf)
-    {
-        return self::find()->where(['id_worf' => $id_worf])->exists();
-    }
-
+    
     public function initializeFromWorkingOrder()
     {
         if ($this->id_worf) {

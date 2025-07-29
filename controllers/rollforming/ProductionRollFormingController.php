@@ -2,19 +2,17 @@
 
 namespace app\controllers\rollforming;
 
-use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
-use app\models\rollforming\WorkingOrderRollForming;
-use app\models\rollforming\ReleaseRawMaterialRollForming;
+use app\models\rollforming\ProductionRollForming;
+use app\models\rollforming\ProductionRollFormingSearch;
 use app\models\rollforming\WorkingOrderRollFormingSearch;
-use app\models\rollforming\ReleaseRawMaterialRollFormingSearch;
 
 /**
- * ReleaseRawMaterialRollFormingController implements the CRUD actions for ReleaseRawMaterialRollForming model.
+ * ProductionRollFormingController implements the CRUD actions for ProductionRollForming model.
  */
-class ReleaseRawMaterialRollFormingController extends Controller
+class ProductionRollFormingController extends Controller
 {
     /**
      * @inheritDoc
@@ -35,14 +33,14 @@ class ReleaseRawMaterialRollFormingController extends Controller
     }
 
     /**
-     * Lists all ReleaseRawMaterialRollForming models.
+     * Lists all ProductionRollForming models.
      *
      * @return string
      */
     public function actionIndex()
     {
         $searchModel = new WorkingOrderRollFormingSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider = $searchModel->search($this->request->queryParams, null, 1);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -51,7 +49,7 @@ class ReleaseRawMaterialRollFormingController extends Controller
     }
 
     /**
-     * Displays a single ReleaseRawMaterialRollForming model.
+     * Displays a single ProductionRollForming model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -64,46 +62,29 @@ class ReleaseRawMaterialRollFormingController extends Controller
     }
 
     /**
-     * Creates a new ReleaseRawMaterialRollForming model.
+     * Creates a new ProductionRollForming model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate($id_worf = null)
+    public function actionCreate()
     {
-        if ($id_worf) {
-            $workingOrder = \app\models\rollforming\WorkingOrderRollForming::findOne($id_worf);
+        $model = new ProductionRollForming();
 
-            if (!$workingOrder || $workingOrder->status != 0) {
-                Yii::$app->session->setFlash('error', 'Data sudah direlease atau tidak valid, tidak bisa membuat release baru.');
-                return $this->redirect(['index']);
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
             }
-        }
-
-        $model = new ReleaseRawMaterialRollForming(['id_worf' => $id_worf]);
-        $model->initializeFromWorkingOrder();
-
-        $details = $model->getWorfDetails();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $model->saveDetailReleases(Yii::$app->request->post('Detail', []));
-
-            $workingOrder = \app\models\rollforming\WorkingOrderRollForming::findOne($id_worf);
-            if ($workingOrder !== null) {
-                $workingOrder->status = 1; 
-                $workingOrder->save(false); 
-            }
-
-            return $this->redirect(['view', 'id' => $model->id]);
+        } else {
+            $model->loadDefaultValues();
         }
 
         return $this->render('create', [
             'model' => $model,
-            'details' => $details,
         ]);
     }
 
     /**
-     * Updates an existing ReleaseRawMaterialRollForming model.
+     * Updates an existing ProductionRollForming model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -123,7 +104,7 @@ class ReleaseRawMaterialRollFormingController extends Controller
     // }
 
     /**
-     * Deletes an existing ReleaseRawMaterialRollForming model.
+     * Deletes an existing ProductionRollForming model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -131,34 +112,21 @@ class ReleaseRawMaterialRollFormingController extends Controller
      */
     public function actionDelete($id)
     {
-        $model = $this->findModel($id);
-
-        \app\models\rollforming\ReleaseRawMaterialRollFormingDetail::deleteAll(['id_header' => $model->id]);
-
-        $workingOrder = \app\models\rollforming\WorkingOrderRollForming::findOne($model->id_worf);
-        if ($workingOrder !== null) {
-            $workingOrder->status = 0; 
-            $workingOrder->save(false); 
-        }
-
-        // Hapus model release raw material
-        $model->delete();
+        $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }
 
-
-
     /**
-     * Finds the ReleaseRawMaterialRollForming model based on its primary key value.
+     * Finds the ProductionRollForming model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return ReleaseRawMaterialRollForming the loaded model
+     * @return ProductionRollForming the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = ReleaseRawMaterialRollForming::findOne(['id' => $id])) !== null) {
+        if (($model = ProductionRollForming::findOne(['id' => $id])) !== null) {
             return $model;
         }
 

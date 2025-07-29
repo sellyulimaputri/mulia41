@@ -16,6 +16,7 @@ use app\models\rollforming\WorkingOrderRollFormingDetail;
  * @property string $production_date
  * @property int $type_production
  * @property string $notes
+ * @property int $status
  *
  * @property SalesOrderStandard $so
  * @property WorkingOrderRollFormingDetail[] $workingOrderRollFormingDetails
@@ -23,7 +24,6 @@ use app\models\rollforming\WorkingOrderRollFormingDetail;
 class WorkingOrderRollForming extends \yii\db\ActiveRecord
 {
 
-    public $status_release;
 
     /**
      * {@inheritdoc}
@@ -40,7 +40,7 @@ class WorkingOrderRollForming extends \yii\db\ActiveRecord
     {
         return [
             [['no_planning', 'id_so', 'so_date', 'production_date', 'type_production'], 'required'],
-            [['id_so', 'type_production'], 'integer'],
+            [['id_so', 'type_production', 'status'], 'integer'],
             [['so_date', 'production_date', 'notes'], 'safe'],
             [['notes'], 'string'],
             [['no_planning'], 'string', 'max' => 50],
@@ -61,6 +61,7 @@ class WorkingOrderRollForming extends \yii\db\ActiveRecord
             'production_date' => 'Production Date',
             'type_production' => 'Type Production',
             'notes' => 'Notes',
+            'status' => 'Status',
         ];
     }
 
@@ -91,6 +92,20 @@ class WorkingOrderRollForming extends \yii\db\ActiveRecord
                 return 'Roll Forming';
             case 2:
                 return 'Powder Coating';
+            default:
+                return 'Unknown';
+        }
+    }
+
+    public function getStatus()
+    {
+        switch ($this->status) {
+            case 0:
+                return 'Belum Direlease';
+            case 1:
+                return 'Direlease';
+            case 2:
+                return 'Diproduksi';
             default:
                 return 'Unknown';
         }
@@ -157,15 +172,4 @@ class WorkingOrderRollForming extends \yii\db\ActiveRecord
         );
     }
 
-    public function isReleased()
-    {
-        return \app\models\rollforming\ReleaseRawMaterialRollForming::find()
-            ->where(['id_worf' => $this->id])
-            ->exists();
-    }
-
-    public function getStatusReleaseText()
-    {
-        return $this->isReleased() ? 'Direlease' : 'Belum Direlease';
-    }
 }

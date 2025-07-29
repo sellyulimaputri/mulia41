@@ -59,48 +59,34 @@ $this->params['breadcrumbs'][] = $this->title;
                     'WorkingOrderRollFormingSearch[type_production]',
                     $searchModel->type_production,
                     [
-                        '' => 'All Type Production', // Option to clear the filter
-                        '1' => 'Roll Forming',       // Option for Roll Production
-                        '2' => 'Powder Coating',        // Option for Powder Coating
+                        '' => 'All Type Production',
+                        '1' => 'Roll Forming',
+                        '2' => 'Powder Coating',
                     ],
                     ['class' => 'form-control']
                 ),
             ],
             [
-                'label' => 'Status',
-                'attribute' => 'status_release',
+                'attribute' => 'status',
                 'value' => function ($model) {
-                    return $model->statusReleaseText;
+                    return $model->getStatus();
                 },
                 'filter' => Html::dropDownList(
-                    'WorkingOrderRollFormingSearch[status_release]',
-                    $searchModel->status_release, // Default filter value
+                    'WorkingOrderRollFormingSearch[status]',
+                    $searchModel->status,
                     [
-                        '' => 'All Status',           // Option to clear the filter
-                        '1' => 'Direlease',              // Option for Released
-                        '0' => 'Belum Direlease',        // Option for Not Released
+                        '' => 'All Status',
+                        0 => 'Belum Direlease',
+                        1 => 'Direlease',
+                        2 => 'Diproduksi',
                     ],
                     ['class' => 'form-control']
                 ),
             ],
+
             [
                 'class' => ActionColumn::className(),
-                'template' => '{view} {update} {delete} {release}',
-                'buttons' => [
-                    'release' => function ($url, $model, $key) {
-                        if (!$model->isReleased()) {
-                            return Html::a(
-                                '<i class="fa fa-share-square"></i>',
-                                ['rollforming/release-raw-material-roll-forming/create', 'id_worf' => $model->id],
-                                [
-                                    'title' => 'Release Raw Material',
-                                    'data-pjax' => '0'
-                                ]
-                            );
-                        }
-                        return null;
-                    },
-                ],
+                'template' => '{view} {update} {delete}',
                 'urlCreator' => function ($action, WorkingOrderRollForming $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                 }

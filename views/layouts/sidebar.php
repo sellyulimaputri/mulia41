@@ -56,6 +56,11 @@
                         'icon' => 'box',
                         'url' => ['rollforming/release-raw-material-roll-forming/index']
                     ],
+                    [
+                        'label' => 'Production Roll Forming',
+                        'icon' => 'box',
+                        'url' => ['rollforming/production-roll-forming/index']
+                    ],
                     // [
                     //     'label' => 'Starter Pages',
                     //     'icon' => 'tachometer-alt',

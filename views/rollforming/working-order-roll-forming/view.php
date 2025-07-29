@@ -51,9 +51,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
             ],
             [
-                'label' => 'Status Release',
-                'format' => 'html',
-                'value' => $model->statusReleaseText,
+                'label' => 'Status',
+                'value' => $model->getStatus(),
             ],
 
         ],
@@ -80,14 +79,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     ->where(['id_so_detail' => $soDetail->id])
                     ->sum('quantity_production');
             ?>
-            <tr>
-                <td><?= $index + 1 ?></td>
-                <td><?= Html::encode($soDetail->item->item_name ?? '(tidak ada)') ?></td>
-                <td><?= Html::encode($soDetail->length ?? '-') ?> mm</td>
-                <td><?= $soDetail->qty ?? 0 ?></td>
-                <td><?= $totalProduced ?></td>
-                <td><?= $detail->quantity_production ?></td>
-            </tr>
+                <tr>
+                    <td><?= $index + 1 ?></td>
+                    <td><?= Html::encode($soDetail->item->item_name ?? '(tidak ada)') ?></td>
+                    <td><?= Html::encode($soDetail->length ?? '-') ?> mm</td>
+                    <td><?= $soDetail->qty ?? 0 ?></td>
+                    <td><?= $totalProduced ?></td>
+                    <td><?= $detail->quantity_production ?></td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
@@ -99,40 +98,40 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     <?php if (!empty($releases)): ?>
-    <h3>Data Release Bahan Baku</h3>
-    <table class="table table-bordered table-condensed">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>No Release</th>
-                <th>Notes</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($releases as $index => $release): ?>
-            <tr>
-                <td><?= $index + 1 ?></td>
-                <td><?= Html::encode($release->no_release) ?></td>
-                <td>
-                    <?= Yii::$app->formatter->asHtml($release->notes) ?>
-                </td>
-                <td>
-                    <?= Html::a('View', ['rollforming/release-raw-material-roll-forming/view', 'id' => $release->id], [
+        <h3>Data Release Bahan Baku</h3>
+        <table class="table table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>No Release</th>
+                    <th>Notes</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($releases as $index => $release): ?>
+                    <tr>
+                        <td><?= $index + 1 ?></td>
+                        <td><?= Html::encode($release->no_release) ?></td>
+                        <td>
+                            <?= Yii::$app->formatter->asHtml($release->notes) ?>
+                        </td>
+                        <td>
+                            <?= Html::a('View', ['rollforming/release-raw-material-roll-forming/view', 'id' => $release->id], [
                                 'class' => 'btn btn-xs btn-info',
                             ]) ?>
-                    <?= Html::a('Delete', ['rollforming/release-raw-material-roll-forming/delete', 'id' => $release->id], [
+                            <?= Html::a('Delete', ['rollforming/release-raw-material-roll-forming/delete', 'id' => $release->id], [
                                 'class' => 'btn btn-xs btn-danger',
                                 'data' => [
                                     'confirm' => 'Apakah Anda yakin ingin menghapus release ini?',
                                     'method' => 'post',
                                 ],
                             ]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     <?php endif; ?>
 
 </div>

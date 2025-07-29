@@ -12,10 +12,10 @@ use app\models\rollforming\WorkingOrderRollForming;
 /** @var app\models\rollforming\WorkingOrderRollFormingSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Release Raw Material Roll Formings';
+$this->title = 'Production Roll Formings';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="release-raw-material-roll-forming-index">
+<div class="production-roll-forming-index">
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -78,15 +78,15 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'class' => ActionColumn::className(),
-                'template' => '{release}',
+                'template' => '{production}',
                 'buttons' => [
-                    'release' => function ($url, $model, $key) {
-                        if ($model->status == 0) {
+                    'production' => function ($url, $model, $key) {
+                        if ($model->status == 1) {
                             return Html::a(
                                 '<i class="fa fa-share-square"></i>',
                                 ['create', 'id_worf' => $model->id],
                                 [
-                                    'title' => 'Release Raw Material',
+                                    'title' => 'Production',
                                     'data-pjax' => '0'
                                 ]
                             );
@@ -100,6 +100,4 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]); ?>
-
-
 </div>

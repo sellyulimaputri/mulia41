@@ -4,12 +4,12 @@ namespace app\models\rollforming;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\rollforming\WorkingOrderRollForming;
+use app\models\rollforming\ProductionRollForming;
 
 /**
- * WorkingOrderRollFormingSearch represents the model behind the search form of `app\models\rollforming\WorkingOrderRollForming`.
+ * ProductionRollFormingSearch represents the model behind the search form of `app\models\rollforming\ProductionRollForming`.
  */
-class WorkingOrderRollFormingSearch extends WorkingOrderRollForming
+class ProductionRollFormingSearch extends ProductionRollForming
 {
     /**
      * {@inheritdoc}
@@ -17,9 +17,8 @@ class WorkingOrderRollFormingSearch extends WorkingOrderRollForming
     public function rules()
     {
         return [
-            [['status'], 'safe'],
-            [['id', 'id_so', 'type_production'], 'integer'],
-            [['no_planning', 'so_date', 'production_date', 'notes'], 'safe'],
+            [['id', 'id_so', 'id_worf', 'type_production'], 'integer'],
+            [['no_production', 'so_date', 'production_date', 'notes'], 'safe'],
         ];
     }
 
@@ -40,23 +39,14 @@ class WorkingOrderRollFormingSearch extends WorkingOrderRollForming
      *
      * @return ActiveDataProvider
      */
-    public function search($params, $formName = null, int $status = null)
+    public function search($params, $formName = null)
     {
-        $query = WorkingOrderRollForming::find();
+        $query = ProductionRollForming::find();
 
         // add conditions that should always apply here
-        if ($status) {
-            $query->andWhere(['status' => $status]);
-        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => [
-                'defaultOrder' => [
-                    'status' => SORT_ASC,
-                    'production_date' => SORT_ASC,
-                ],
-            ],
         ]);
 
         $this->load($params, $formName);
@@ -71,14 +61,13 @@ class WorkingOrderRollFormingSearch extends WorkingOrderRollForming
         $query->andFilterWhere([
             'id' => $this->id,
             'id_so' => $this->id_so,
+            'id_worf' => $this->id_worf,
             'so_date' => $this->so_date,
             'production_date' => $this->production_date,
             'type_production' => $this->type_production,
-            'status' => $this->status,
-
         ]);
 
-        $query->andFilterWhere(['like', 'no_planning', $this->no_planning])
+        $query->andFilterWhere(['like', 'no_production', $this->no_production])
             ->andFilterWhere(['like', 'notes', $this->notes]);
 
         return $dataProvider;
