@@ -16,6 +16,13 @@ use Yii;
  * @property float $punch_scrap
  * @property float $refurbish
  * @property float $remaining_coil
+ * @property float $final_result_qc
+ * @property float $reject_qc
+ * @property string $document_qc
+ * @property float $sample_result_1_qc
+ * @property float $sample_result_2_qc
+ * @property float $sample_result_3_qc
+ * @property float $sample_result_4_qc
  *
  * @property ProductionRollForming $header
  * @property WorkingOrderRollFormingDetail $worfDetail
@@ -38,10 +45,10 @@ class ProductionRollFormingDetail extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_header', 'id_worf_detail', 'actual_production_date', 'final_result', 'waste', 'punch_scrap', 'refurbish', 'remaining_coil'], 'required'],
+            [['id_header', 'id_worf_detail'], 'required'],
             [['id_header', 'id_worf_detail'], 'integer'],
-            [['actual_production_date'], 'safe'],
-            [['final_result', 'waste', 'punch_scrap', 'refurbish', 'remaining_coil'], 'number'],
+            [['actual_production_date', 'document_qc'], 'safe'],
+            [['final_result', 'waste', 'punch_scrap', 'refurbish', 'remaining_coil', 'final_result_qc', 'reject_qc', 'sample_result_1_qc', 'sample_result_2_qc', 'sample_result_3_qc', 'sample_result_4_qc'], 'number'],
             [['id_header'], 'exist', 'skipOnError' => true, 'targetClass' => ProductionRollForming::class, 'targetAttribute' => ['id_header' => 'id']],
             [['id_worf_detail'], 'exist', 'skipOnError' => true, 'targetClass' => WorkingOrderRollFormingDetail::class, 'targetAttribute' => ['id_worf_detail' => 'id']],
         ];
@@ -62,6 +69,13 @@ class ProductionRollFormingDetail extends \yii\db\ActiveRecord
             'punch_scrap' => 'Punch Scrap',
             'refurbish' => 'Refurbish',
             'remaining_coil' => 'Remaining Coil',
+            'final_result_qc' => 'Final Result QC',
+            'reject_qc' => 'Reject QC',
+            'document_qc' => 'Document QC',
+            'sample_result_1_qc' => 'Result 1 QC',
+            'sample_result_2_qc' => 'Result 2 QC',
+            'sample_result_3_qc' => 'Result 3 QC',
+            'sample_result_4_qc' => 'Result 4 QC',
         ];
     }
 
@@ -84,5 +98,4 @@ class ProductionRollFormingDetail extends \yii\db\ActiveRecord
     {
         return $this->hasOne(WorkingOrderRollFormingDetail::class, ['id' => 'id_worf_detail']);
     }
-
 }

@@ -12,6 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="production-roll-forming-create">
     <?= $this->render('_form', [
         'model' => $model,
+        'details'=> $details,
     ]) ?>
 
 </div>

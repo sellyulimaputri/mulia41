@@ -133,5 +133,46 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
         </table>
     <?php endif; ?>
+    <?php
+    $productions = \app\models\rollforming\ProductionRollForming::find()
+        ->where(['id_worf' => $model->id])
+        ->orderBy(['id' => SORT_ASC])
+        ->all();
+    ?>
+
+    <?php if (!empty($productions)): ?>
+        <h3>Data Produksi</h3>
+        <table class="table table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>No Production</th>
+                    <th>Notes</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($productions as $index => $production): ?>
+                    <tr>
+                        <td><?= $index + 1 ?></td>
+                        <td><?= Html::encode($production->no_production) ?></td>
+                        <td><?= Yii::$app->formatter->asHtml($production->notes) ?></td>
+                        <td>
+                            <?= Html::a('View', ['rollforming/production-roll-forming/view', 'id' => $production->id], [
+                                'class' => 'btn btn-xs btn-info',
+                            ]) ?>
+                            <?= Html::a('Delete', ['rollforming/production-roll-forming/delete', 'id' => $production->id], [
+                                'class' => 'btn btn-xs btn-danger',
+                                'data' => [
+                                    'confirm' => 'Apakah Anda yakin ingin menghapus produksi ini?',
+                                    'method' => 'post',
+                                ],
+                            ]) ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
 
 </div>

@@ -44,8 +44,6 @@ use app\widgets\SearchableSelect;
             <?= $form->field($model, 'type_production')->hiddenInput()->label(false) ?>
         </div>
     </div>
-
-    <?= $form->field($model, 'type_production')->hiddenInput()->label(false) ?>
     <h4>Detail Material</h4>
     <table class="table table-bordered table-condensed">
         <thead>
@@ -62,26 +60,26 @@ use app\widgets\SearchableSelect;
         <tbody>
         <tbody>
             <?php foreach ($details as $i => $detail): ?>
-                <tr>
-                    <td><?= $i + 1 ?></td>
-                    <td><?= $detail->soDetail->item->item_name ?? '-' ?></td>
-                    <td><?= $detail->soDetail->item->rawMaterial->item_name ?? '-' ?></td>
-                    <td><?= $detail->soDetail->length ?? '-' ?></td>
-                    <?php
+            <tr>
+                <td><?= $i + 1 ?></td>
+                <td><?= $detail->soDetail->item->item_name ?? '-' ?></td>
+                <td><?= $detail->soDetail->item->rawMaterial->item_name ?? '-' ?></td>
+                <td><?= $detail->soDetail->length ?? '-' ?></td>
+                <?php
                     $refRelease = ceil((($detail->soDetail->length ?? 0) * ($detail->quantity_production ?? 0)) / ($detail->soDetail->item->rawMaterial->average ?? 1));
                     ?>
-                    <td><?= Yii::$app->formatter->asDecimal($refRelease, 0) ?></td>
+                <td><?= Yii::$app->formatter->asDecimal($refRelease, 0) ?></td>
 
-                    <td><?= $detail->quantity_production ?></td>
-                    <td>
-                        <div>
-                            <?= Html::a('Scan', ['scan', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-                            <?= Html::a('View', ['view', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
-                        </div>
-                    </td>
-                </tr>
+                <td><?= $detail->quantity_production ?></td>
+                <td>
+                    <div>
+                        <?= Html::a('Scan', ['scan', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                        <?= Html::a('View', ['view', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
+                    </div>
+                </td>
+            </tr>
 
-                <input type="hidden" name="Detail[<?= $i ?>][id_worf_detail]" value="<?= $detail->id ?>" />
+            <input type="hidden" name="Detail[<?= $i ?>][id_worf_detail]" value="<?= $detail->id ?>" />
             <?php endforeach; ?>
         </tbody>
 
