@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
 
     <div class="row">
         <div class="col-md-2">
-            <?= $form->field($model, 'no_production')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'no_production')->textInput(['maxlength' => true, 'placeholder' => 'Enter No Production']) ?>
         </div>
 
         <div class="col-md-2">
@@ -48,7 +48,7 @@ use yii\widgets\ActiveForm;
     </div>
 
     <h4>Detail Material</h4>
-    <table class="table table-bordered table-condensed">
+    <table class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>#</th>
@@ -156,27 +156,27 @@ use yii\widgets\ActiveForm;
 
             <div class="col-md-2">
                 <label for="modal-final-result" class="form-label">Final Result</label>
-                <input type="number" class="form-control" id="modal-final-result">
+                <input type="number" class="form-control" id="modal-final-result" placeholder="Enter Final Result">
             </div>
 
             <div class="col-md-2">
                 <label for="modal-waste" class="form-label">Waste</label>
-                <input type="number" class="form-control" id="modal-waste">
+                <input type="number" class="form-control" id="modal-waste" placeholder="Enter Waste">
             </div>
 
             <div class="col-md-2">
                 <label for="modal-punch-scrap" class="form-label">Punch Scrap</label>
-                <input type="number" class="form-control" id="modal-punch-scrap">
+                <input type="number" class="form-control" id="modal-punch-scrap" placeholder="Enter Punch Scrap">
             </div>
 
             <div class="col-md-2">
                 <label for="modal-refurbish" class="form-label">Refurbish</label>
-                <input type="number" class="form-control" id="modal-refurbish">
+                <input type="number" class="form-control" id="modal-refurbish" placeholder="Enter Refurbish">
             </div>
 
             <div class="col-md-2">
                 <label for="modal-remaining-coil" class="form-label">Remaining Coil</label>
-                <input type="number" class="form-control" id="modal-remaining-coil">
+                <input type="number" class="form-control" id="modal-remaining-coil" placeholder="Enter Remaining Coil">
             </div>
         </div>
         <button type="button" class="btn btn-success" id="saveProductionDetail">Save</button>
@@ -196,39 +196,39 @@ use yii\widgets\ActiveForm;
         <div class="row mb-3">
             <div class="col-md-2">
                 <label>Actual Prod. Date</label>
-                <input type="text" class="form-control" id="qc-actual-date" readonly>
+                <input type="text" class="form-control" id="qc-actual-date" readonly placeholder="Automatic">
             </div>
             <div class="col-md-2">
                 <label>Final Result</label>
-                <input type="number" class="form-control" id="qc-final-prod" readonly>
+                <input type="number" class="form-control" id="qc-final-prod" readonly placeholder="Automatic">
             </div>
             <div class="col-md-2">
                 <label>Waste</label>
-                <input type="number" class="form-control" id="qc-waste" readonly>
+                <input type="number" class="form-control" id="qc-waste" readonly placeholder="Automatic">
             </div>
             <div class="col-md-2">
                 <label>Punch Scrap</label>
-                <input type="number" class="form-control" id="qc-punch" readonly>
+                <input type="number" class="form-control" id="qc-punch" readonly placeholder="Automatic">
             </div>
             <div class="col-md-2">
                 <label>Refurbish</label>
-                <input type="number" class="form-control" id="qc-refurbish" readonly>
+                <input type="number" class="form-control" id="qc-refurbish" readonly placeholder="Automatic">
             </div>
             <div class="col-md-2">
                 <label>Remaining Coil</label>
-                <input type="number" class="form-control" id="qc-remaining-coil" readonly>
+                <input type="number" class="form-control" id="qc-remaining-coil" readonly placeholder="Automatic">
             </div>
         </div>
 
         <div class="row mb-3">
             <div class="col-md-3">
                 <label for="qc-final-result" class="form-label">Final Result QC</label>
-                <input type="number" class="form-control" id="qc-final-result">
+                <input type="number" class="form-control" id="qc-final-result" placeholder="Enter Final Result">
             </div>
 
             <div class="col-md-3">
                 <label for="qc-reject" class="form-label">Reject QC</label>
-                <input type="number" class="form-control" id="qc-reject">
+                <input type="number" class="form-control" id="qc-reject" placeholder="Enter Reject Data">
             </div>
 
             <div class="col-md-6">
@@ -237,12 +237,13 @@ use yii\widgets\ActiveForm;
                     placeholder="Pilih file di form utama (lihat tabel)">
             </div>
         </div>
-
+        <h2 style="margin-top:50px;">Sample Result</h2>
+        <hr>
         <div class="row mb-3">
             <?php for ($s = 1; $s <= 4; $s++): ?>
                 <div class="col-md-3">
                     <label for="qc-sample-<?= $s ?>" class="form-label">Sample <?= $s ?> QC</label>
-                    <input type="number" class="form-control" id="qc-sample-<?= $s ?>">
+                    <input type="number" class="form-control" id="qc-sample-<?= $s ?>" placeholder="Enter Result">
                 </div>
             <?php endfor; ?>
         </div>

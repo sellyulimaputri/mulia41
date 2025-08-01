@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
     <h4>Detail Bahan Baku</h4>
-    <table class="table table-bordered table-condensed">
+    <table class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>#</th>

@@ -71,17 +71,18 @@ use wbraganca\dynamicform\DynamicFormWidget;
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-md-2">
-                                        <?= $form->field($detail, "[$i]description")->textInput(['maxlength' => true])->label('Deskripsi') ?>
+                                        <?= $form->field($detail, "[$i]description")->textInput(['maxlength' => true, 'placeholder' => 'Enter Description'])->label('Deskripsi') ?>
                                     </div>
                                     <div class="col-md-2">
                                         <?= $form->field($detail, "[$i]nominal")->textInput([
                                             'type' => 'number',
                                             'step' => '0.01',
                                             'class' => 'form-control text-right',
+                                            'placeholder' => 'Enter Nominal',
                                         ])->label('Nominal') ?>
                                     </div>
                                     <div class="col-md-2">
-                                        <?= $form->field($detail, "[$i]notes")->textInput()->label('Catatan') ?>
+                                        <?= $form->field($detail, "[$i]notes")->textInput(['maxlength' => true, 'placeholder' => 'Enter Catatan'])->label('Catatan') ?>
                                     </div>
                                     <div class="col-md-1 d-flex align-items-end">
                                         <div class="form-group">

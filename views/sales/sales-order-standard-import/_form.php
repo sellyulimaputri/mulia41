@@ -20,7 +20,7 @@ use app\models\master\MasterCustomer;
 
     <div class="row">
         <div class="col-md-2">
-            <?= $form->field($model, 'no_so')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'no_so')->textInput(['maxlength' => true,'placeholder' => 'Enter No Sales Order']) ?>
         </div>
 
         <div class="col-md-2">

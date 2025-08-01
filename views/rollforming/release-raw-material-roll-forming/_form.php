@@ -15,7 +15,7 @@ use app\widgets\SearchableSelect;
 
     <div class="row">
         <div class="col-md-2">
-            <?= $form->field($model, 'no_release')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'no_release')->textInput(['maxlength' => true, 'placeholder' => 'Enter No Release']) ?>
         </div>
 
         <div class="col-md-2">
@@ -45,7 +45,7 @@ use app\widgets\SearchableSelect;
         </div>
     </div>
     <h4>Detail Material</h4>
-    <table class="table table-bordered table-condensed">
+    <table class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>#</th>

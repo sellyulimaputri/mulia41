@@ -16,7 +16,7 @@ use app\models\sales\SalesOrderStandard;
 
     <div class="row">
         <div class="col-md-2">
-            <?= $form->field($model, 'no_planning')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'no_planning')->textInput(['maxlength' => true, 'placeholder' => 'Enter No Planning']) ?>
         </div>
 
         <div class="col-md-2">
@@ -42,7 +42,7 @@ use app\models\sales\SalesOrderStandard;
         </div>
 
         <div class="col-md-2">
-            <?= $form->field($model, 'so_date')->textInput(['readonly' => true]) ?>
+            <?= $form->field($model, 'so_date')->textInput(['readonly' => true, 'placeholder' => 'Automatic']) ?>
         </div>
 
         <div class="col-md-2">
@@ -59,38 +59,39 @@ use app\models\sales\SalesOrderStandard;
     </div>
 
     <?php if (!empty($soDetails)): ?>
-    <h4>Detail Sales Order</h4>
-    <table class="table table-bordered table-condensed">
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th>Length</th>
-                <th>Deskripsi</th>
-                <th>Production</th>
-                <th>Color (code)</th>
-                <th>Qty</th>
-                <th>Remaining Qty</th>
-                <th>Qty Production</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($soDetails as $detail): ?>
-            <tr>
-                <td><?= Html::encode($detail->item->item_name ?? '-') ?></td>
-                <td><?= $detail->length ?> mm</td>
-                <td><?= $detail->description ?></td>
-                <td><?= $detail->namaTypeProduksi ?></td>
-                <td><?= $detail->rawMaterial->item_code ?? '-' ?></td>
-                <td><?= $detail->qty ?></td>
-                <td><?= $detail->remaining_qty ?? '-' ?></td>
-                <td>
-                    <input type="number" class="form-control" name="qty_production[<?= $detail->id ?>]"
-                        <?= (isset($detail->remaining_qty) && $detail->remaining_qty <= 0) ? 'disabled' : '' ?> />
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+        <h4>Detail Sales Order</h4>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Length</th>
+                    <th>Deskripsi</th>
+                    <th>Production</th>
+                    <th>Color (code)</th>
+                    <th>Qty</th>
+                    <th>Remaining Qty</th>
+                    <th>Qty Production</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($soDetails as $detail): ?>
+                    <tr>
+                        <td><?= Html::encode($detail->item->item_name ?? '-') ?></td>
+                        <td><?= $detail->length ?> mm</td>
+                        <td><?= $detail->description ?></td>
+                        <td><?= $detail->namaTypeProduksi ?></td>
+                        <td><?= $detail->rawMaterial->item_code ?? '-' ?></td>
+                        <td><?= $detail->qty ?></td>
+                        <td><?= $detail->remaining_qty ?? '-' ?></td>
+                        <td>
+                            <input type="number" class="form-control" name="qty_production[<?= $detail->id ?>]"
+                                <?= (isset($detail->remaining_qty) && $detail->remaining_qty <= 0) ? 'disabled' : '' ?>
+                                placeholder="Enter Qty Production" />
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     <?php endif; ?>
 
     <?= $form->field($model, 'notes')->widget(\dosamigos\ckeditor\CKEditor::class, [
