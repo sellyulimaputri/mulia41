@@ -4,12 +4,12 @@ namespace app\models\rollforming;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\rollforming\ProductionRollForming;
+use app\models\rollforming\CostProductionRollForming;
 
 /**
- * ProductionRollFormingSearch represents the model behind the search form of `app\models\rollforming\ProductionRollForming`.
+ * CostProductionRollFormingSearch represents the model behind the search form of `app\models\rollforming\CostProductionRollForming`.
  */
-class ProductionRollFormingSearch extends ProductionRollForming
+class CostProductionRollFormingSearch extends CostProductionRollForming
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class ProductionRollFormingSearch extends ProductionRollForming
     public function rules()
     {
         return [
-            [['id', 'id_so', 'id_worf', 'type_production','status'], 'integer'],
-            [['no_production', 'so_date', 'production_date', 'notes'], 'safe'],
+            [['id', 'id_production', 'id_worf', 'id_so', 'type_production'], 'integer'],
+            [['so_date', 'production_date', 'notes'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class ProductionRollFormingSearch extends ProductionRollForming
      */
     public function search($params, $formName = null)
     {
-        $query = ProductionRollForming::find();
+        $query = CostProductionRollForming::find();
 
         // add conditions that should always apply here
 
@@ -60,16 +60,15 @@ class ProductionRollFormingSearch extends ProductionRollForming
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'id_so' => $this->id_so,
-            'status' => $this->status,
+            'id_production' => $this->id_production,
             'id_worf' => $this->id_worf,
+            'id_so' => $this->id_so,
             'so_date' => $this->so_date,
             'production_date' => $this->production_date,
             'type_production' => $this->type_production,
         ]);
 
-        $query->andFilterWhere(['like', 'no_production', $this->no_production])
-            ->andFilterWhere(['like', 'notes', $this->notes]);
+        $query->andFilterWhere(['like', 'notes', $this->notes]);
 
         return $dataProvider;
     }

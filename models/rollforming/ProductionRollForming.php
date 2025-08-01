@@ -18,6 +18,7 @@ use app\models\rollforming\WorkingOrderRollForming;
  * @property string $production_date
  * @property int $type_production
  * @property string|null $notes
+ * @property int $status
  *
  * @property ProductionRollFormingDetail[] $productionRollFormingDetails
  * @property SalesOrderStandard $so
@@ -44,6 +45,7 @@ class ProductionRollForming extends \yii\db\ActiveRecord
             [['notes'], 'default', 'value' => null],
             [['no_production', 'id_so', 'id_worf', 'so_date', 'production_date', 'type_production'], 'required'],
             [['id_so', 'id_worf', 'type_production'], 'integer'],
+            [['status'], 'integer'],
             [['so_date', 'production_date'], 'safe'],
             [['notes'], 'string'],
             [['no_production'], 'string', 'max' => 50],
@@ -66,6 +68,7 @@ class ProductionRollForming extends \yii\db\ActiveRecord
             'production_date' => 'Production Date',
             'type_production' => 'Type Production',
             'notes' => 'Notes',
+            'status' => 'Status',
         ];
     }
 
@@ -106,6 +109,18 @@ class ProductionRollForming extends \yii\db\ActiveRecord
                 return 'Roll Forming';
             case 2:
                 return 'Powder Coating';
+            default:
+                return 'Unknown';
+        }
+    }
+    
+    public function getNamaStatus()
+    {
+        switch ($this->status) {
+            case 0:
+                return '-';
+            case 1:
+                return 'Done';
             default:
                 return 'Unknown';
         }

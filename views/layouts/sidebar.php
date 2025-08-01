@@ -61,6 +61,11 @@
                         'icon' => 'box',
                         'url' => ['rollforming/production-roll-forming/index']
                     ],
+                    [
+                        'label' => 'Cost Product Roll Forming',
+                        'icon' => 'box',
+                        'url' => ['rollforming/cost-production-roll-forming/index']
+                    ],
                     // [
                     //     'label' => 'Starter Pages',
                     //     'icon' => 'tachometer-alt',
