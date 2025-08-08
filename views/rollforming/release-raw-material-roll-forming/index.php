@@ -69,9 +69,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     $searchModel->status,
                     [
                         '' => 'All Status',
-                        0 => 'Belum Direlease',
-                        1 => 'Direlease',
-                        2 => 'Diproduksi',
+                        0 => 'Not Released Yet',
+                        1 => 'Released',
+                        2 => 'Produced',
+                        3 => 'Done',
+                        4 => 'Partial QC Approve',
                     ],
                     ['class' => 'form-control']
                 ),

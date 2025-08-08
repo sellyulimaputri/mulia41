@@ -1,5 +1,6 @@
 <?php
 
+use app\models\master\BusinessPartner;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\grid\GridView;
@@ -41,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => SearchableSelect::widget([
                     'model' => $searchModel,
                     'attribute' => 'id_customer',
-                    'items' => MasterCustomer::getDropdownList(),
+                    'items' => BusinessPartner::getDropdownList(),
                     'options' => ['class' => 'form-control'],
                     'prompt' => 'All Customer',
                 ]),

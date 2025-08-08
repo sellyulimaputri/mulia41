@@ -33,39 +33,96 @@
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
-            <?php
-            echo \hail812\adminlte\widgets\Menu::widget([
-                'items' => [
+            <?php echo \hail812\adminlte\widgets\Menu::widget([
+                // ['label' => 'Level1'],
+                // [
+                "items" => [
                     [
-                        'label' => 'Master Item',
-                        'icon' => 'box',
-                        'url' => ['master/master-item/index']
+                        "label" => "Master",
+                        "icon" => "box", // atau ikon lain sesuai FontAwesome
+                        "items" => [
+                            [
+                                "label" => "Master Item Finish Good",
+                                "icon" => "box",
+                                "url" => ["master-item/index"],
+                            ],
+                            [
+                                "label" => "Master Raw Material",
+                                "icon" => "box",
+                                "url" => ["master-raw-material/index"],
+                            ],
+                            [
+                                "label" => "Business Partner",
+                                "icon" => "users",
+                                "url" => ["business-partner/index"],
+                            ],
+                        ],
                     ],
                     [
-                        'label' => 'Import Sales Order',
-                        'icon' => 'box',
-                        'url' => ['sales/sales-order-standard-import/index']
+                        "label" => "Sales Order",
+                        "icon" => "cart-plus", // atau ikon lain sesuai FontAwesome
+                        "items" => [
+                            [
+                                "label" => "Import Sales Order",
+                                "icon" => "file-invoice",
+                                "url" => [
+                                    "sales/sales-order-standard-import/index",
+                                ],
+                            ],
+                        ],
                     ],
                     [
-                        'label' => 'Working Order Roll Forming',
-                        'icon' => 'box',
-                        'url' => ['rollforming/working-order-roll-forming/index']
+                        "label" => "Roll Forming",
+                        "icon" => "industry", // atau ikon lain sesuai FontAwesome
+                        "items" => [
+                            [
+                                "label" => "Working RF",
+                                "icon" => "box",
+                                "url" => [
+                                    "rollforming/working-order-roll-forming/index",
+                                ],
+                            ],
+                            [
+                                "label" => "Release Raw Material RF",
+                                "icon" => "box",
+                                "url" => [
+                                    "rollforming/release-raw-material-roll-forming/index",
+                                ],
+                            ],
+                            [
+                                "label" => "Production RF",
+                                "icon" => "box",
+                                "url" => [
+                                    "rollforming/production-roll-forming/index",
+                                ],
+                            ],
+                            [
+                                "label" => "Cost Production RF",
+                                "icon" => "box",
+                                "url" => [
+                                    "rollforming/cost-production-roll-forming/index",
+                                ],
+                            ],
+                        ],
                     ],
                     [
-                        'label' => 'Release Raw Material Roll Forming',
-                        'icon' => 'box',
-                        'url' => ['rollforming/release-raw-material-roll-forming/index']
+                        "label" => "Purchase Order",
+                        "icon" => "store", // atau ikon lain sesuai FontAwesome
+                        "items" => [
+                            [
+                                "label" => "Finalize PO",
+                                "icon" => "file-invoice",
+                                "url" => ["purchase-order/index"],
+                            ],
+
+                            [
+                                "label" => "Good Reciept",
+                                "icon" => "cart-arrow-down",
+                                "url" => ["good-reciept/index"],
+                            ],
+                        ],
                     ],
-                    [
-                        'label' => 'Production Roll Forming',
-                        'icon' => 'box',
-                        'url' => ['rollforming/production-roll-forming/index']
-                    ],
-                    [
-                        'label' => 'Cost Product Roll Forming',
-                        'icon' => 'box',
-                        'url' => ['rollforming/cost-production-roll-forming/index']
-                    ],
+
                     // [
                     //     'label' => 'Starter Pages',
                     //     'icon' => 'tachometer-alt',
@@ -104,8 +161,7 @@
                     // ['label' => 'Warning', 'iconClass' => 'nav-icon far fa-circle text-warning'],
                     // ['label' => 'Informational', 'iconStyle' => 'far', 'iconClassAdded' => 'text-info'],
                 ],
-            ]);
-            ?>
+            ]); ?>
         </nav>
         <!-- /.sidebar-menu -->
     </div>

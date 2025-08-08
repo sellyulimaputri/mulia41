@@ -6,6 +6,7 @@ use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
+use app\models\purchasing\GoodReciept;
 use app\models\rollforming\WorkingOrderRollForming;
 use app\models\rollforming\ReleaseRawMaterialRollForming;
 use app\models\rollforming\WorkingOrderRollFormingSearch;
@@ -72,7 +73,6 @@ class ReleaseRawMaterialRollFormingController extends Controller
     {
         if ($id_worf) {
             $workingOrder = \app\models\rollforming\WorkingOrderRollForming::findOne($id_worf);
-
             if (!$workingOrder || $workingOrder->status != 0) {
                 Yii::$app->session->setFlash('error', 'Data sudah direlease atau tidak valid, tidak bisa membuat release baru.');
                 return $this->redirect(['index']);
@@ -81,19 +81,29 @@ class ReleaseRawMaterialRollFormingController extends Controller
 
         $model = new ReleaseRawMaterialRollForming(['id_worf' => $id_worf]);
         $model->initializeFromWorkingOrder();
-
         $details = $model->getWorfDetails();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $model->saveDetailReleases(Yii::$app->request->post('Detail', []));
+        if ($model->load(Yii::$app->request->post())) {
+            $transaction = Yii::$app->db->beginTransaction();
 
-            $workingOrder = \app\models\rollforming\WorkingOrderRollForming::findOne($id_worf);
-            if ($workingOrder !== null) {
-                $workingOrder->status = 1; 
-                $workingOrder->save(false); 
+            try {
+                if (!$model->save()) {
+                    throw new \Exception("Gagal menyimpan header release.");
+                }
+
+                if (!$model->saveDetailReleases(Yii::$app->request->post('Detail', []))) {
+                    throw new \Exception("Gagal menyimpan detail release.");
+                }
+
+                $workingOrder->status = 1;
+                $workingOrder->save(false);
+
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (\Throwable $e) {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Gagal menyimpan release: ' . $e->getMessage());
             }
-
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
@@ -101,6 +111,7 @@ class ReleaseRawMaterialRollFormingController extends Controller
             'details' => $details,
         ]);
     }
+
 
     /**
      * Updates an existing ReleaseRawMaterialRollForming model.
@@ -133,21 +144,38 @@ class ReleaseRawMaterialRollFormingController extends Controller
     {
         $model = $this->findModel($id);
 
-        \app\models\rollforming\ReleaseRawMaterialRollFormingDetail::deleteAll(['id_header' => $model->id]);
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            // Ambil semua detail release yang terkait
+            $details = \app\models\rollforming\ReleaseRawMaterialRollFormingDetail::findAll(['id_header' => $model->id]);
 
-        $workingOrder = \app\models\rollforming\WorkingOrderRollForming::findOne($model->id_worf);
-        if ($workingOrder !== null) {
-            $workingOrder->status = 0; 
-            $workingOrder->save(false); 
+            foreach ($details as $detail) {
+                // Hapus semua QR yang terkait dengan detail tersebut
+                \app\models\rollforming\ReleaseRawMaterialRollFormingQr::deleteAll(['id_header_detail' => $detail->id]);
+            }
+
+            // Hapus semua detail
+            \app\models\rollforming\ReleaseRawMaterialRollFormingDetail::deleteAll(['id_header' => $model->id]);
+
+            // Update status working order ke belum direlease
+            $workingOrder = \app\models\rollforming\WorkingOrderRollForming::findOne($model->id_worf);
+            if ($workingOrder !== null) {
+                $workingOrder->status = 0;
+                $workingOrder->save(false);
+            }
+
+            // Hapus header release
+            $model->delete();
+
+            $transaction->commit();
+            Yii::$app->session->setFlash('success', 'Data berhasil dihapus.');
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            Yii::$app->session->setFlash('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
-
-        // Hapus model release raw material
-        $model->delete();
 
         return $this->redirect(['index']);
     }
-
-
 
     /**
      * Finds the ReleaseRawMaterialRollForming model based on its primary key value.
@@ -163,5 +191,32 @@ class ReleaseRawMaterialRollFormingController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionGetLocaters($id)
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $itemDetail = \app\models\purchasing\GoodRecieptItemDetail::findOne($id);
+
+        if (!$itemDetail) {
+            return ['success' => false, 'message' => 'Data item detail tidak ditemukan'];
+        }
+
+        $grHeader = $itemDetail->goodReciept;
+
+        return [
+            'success' => true,
+            'no_good_receipt' => $grHeader ? $grHeader->no_good_receipt : null,
+            'details' => [
+                [
+                    'id' => $itemDetail->header->id,
+                    'id_material' => $itemDetail->id_material,
+                    'supplier_code' => $itemDetail->supplier_code,
+                    'berat_awal' => $itemDetail->berat_awal,
+                    'locater' => $itemDetail->locater ?: '(Kosong)',
+                ]
+            ],
+        ];
     }
 }

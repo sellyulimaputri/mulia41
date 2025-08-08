@@ -34,7 +34,7 @@ use yii\bootstrap4\Breadcrumbs;
     </div>
     <!-- /.content-header -->
     <?php foreach (Yii::$app->session->getAllFlashes() as $key => $message): ?>
-    <div class="alert alert-<?= $key ?>">
+    <div class="alert alert-<?= $key ?> m-2">
         <?php
             if (is_array($message)) {
                 foreach ($message as $msg) {

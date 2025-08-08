@@ -12,9 +12,10 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="working-order-roll-forming-view">
-
     <p>
+        <?php if ($model->status == 0): ?>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
@@ -22,7 +23,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?php endif; ?>
+        <?= Html::a('<i class="fas fa-print"></i> Print PDF', ['print', 'id' => $model->id], [
+            'class' => 'btn btn-warning',
+            'target' => '_blank'
+        ]) ?>
+
     </p>
+
 
     <?= DetailView::widget([
         'model' => $model,
@@ -57,7 +65,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         ],
     ]) ?>
-    <h3>Detail Produksi</h3>
+    <h3>Detail Working</h3>
 
     <table class="table table-bordered table-striped">
         <thead>
@@ -175,11 +183,11 @@ $this->params['breadcrumbs'][] = $this->title;
     </table>
     <?php endif; ?>
     <?php
-$costProductions = \app\models\rollforming\CostProductionRollForming::find()
-    ->where(['id_worf' => $model->id])
-    ->orderBy(['id' => SORT_ASC])
-    ->all();
-?>
+    $costProductions = \app\models\rollforming\CostProductionRollForming::find()
+        ->where(['id_worf' => $model->id])
+        ->orderBy(['id' => SORT_ASC])
+        ->all();
+    ?>
 
     <?php if (!empty($costProductions)): ?>
     <h3>Data Cost Production</h3>
@@ -198,8 +206,8 @@ $costProductions = \app\models\rollforming\CostProductionRollForming::find()
         </thead>
         <tbody>
             <?php
-        foreach ($costProductions as $i => $cost):
-        ?>
+                foreach ($costProductions as $i => $cost):
+                ?>
             <tr>
                 <td><?= $i + 1 ?></td>
                 <td><?= Html::encode($cost->production->no_production ?? '-') ?></td>
@@ -211,12 +219,12 @@ $costProductions = \app\models\rollforming\CostProductionRollForming::find()
                 <td>
                     <?= Html::a('View', ['rollforming/cost-production-roll-forming/view', 'id' => $cost->id], ['class' => 'btn btn-sm btn-info']) ?>
                     <?= Html::a('Delete', ['rollforming/cost-production-roll-forming/delete', 'id' => $cost->id], [
-                    'class' => 'btn btn-sm btn-danger',
-                    'data' => [
-                        'confirm' => 'Apakah Anda yakin ingin menghapus cost production ini?',
-                        'method' => 'post',
-                    ],
-                ]) ?>
+                                'class' => 'btn btn-sm btn-danger',
+                                'data' => [
+                                    'confirm' => 'Apakah Anda yakin ingin menghapus cost production ini?',
+                                    'method' => 'post',
+                                ],
+                            ]) ?>
                 </td>
             </tr>
             <?php endforeach; ?>

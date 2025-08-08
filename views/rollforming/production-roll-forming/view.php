@@ -21,6 +21,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?= Html::a('<i class="fas fa-print"></i> Print Production', ['print-production', 'id' => $model->id], [
+            'class' => 'btn btn-primary',
+            'target' => '_blank'
+        ]) ?>
+
+        <?= Html::a('<i class="fas fa-print"></i> Print QC', ['print-qc', 'id' => $model->id], [
+            'class' => 'btn btn-secondary',
+            'target' => '_blank'
+        ]) ?>
+
+
     </p>
 
     <?= DetailView::widget([
@@ -79,42 +90,42 @@ $this->params['breadcrumbs'][] = $this->title;
                 $soDetail = $detail->worfDetail->soDetail ?? null;
                 $item = $soDetail->item ?? null;
             ?>
-                <tr>
-                    <td><?= $index + 1 ?></td>
-                    <td><?= Html::encode($item->item_name ?? '-') ?></td>
-                    <td><?= Html::encode($soDetail->length ?? '-') ?></td>
-                    <td><?= Html::encode($soDetail->description ?? '-') ?></td>
-                    <td><?= Html::encode($soDetail->namaTypeProduksi ?? '-') ?></td>
-                    <td><?= Html::encode($soDetail->rawMaterial->item_code ?? '-') ?></td>
-                    <td><?= Html::encode($soDetail->qty ?? '-') ?></td>
-                    <td><?= Html::encode($soDetail->remaining_qty ?? '-') ?></td>
-                    <td><?= Html::encode($detail->worfDetail->quantity_production ?? '-') ?></td>
-                    <td>
-                        <button type="button" class="btn btn-primary btn-production" data-id="<?= $detail->id ?>"
-                            data-name="<?= $item->item_name ?? '-' ?>" data-actual="<?= $detail->actual_production_date ?>"
-                            data-final="<?= $detail->final_result ?>" data-waste="<?= $detail->waste ?>"
-                            data-punch="<?= $detail->punch_scrap ?>" data-refurbish="<?= $detail->refurbish ?>"
-                            data-remaining="<?= $detail->remaining_coil ?>" data-toggle="modal"
-                            data-target="#productionModal">
-                            Production
-                        </button>
+            <tr>
+                <td><?= $index + 1 ?></td>
+                <td><?= Html::encode($item->item_name ?? '-') ?></td>
+                <td><?= Html::encode($soDetail->length ?? '-') ?></td>
+                <td><?= Html::encode($soDetail->description ?? '-') ?></td>
+                <td><?= Html::encode($soDetail->namaTypeProduksi ?? '-') ?></td>
+                <td><?= Html::encode($soDetail->rawMaterial->item_code ?? '-') ?></td>
+                <td><?= Html::encode($soDetail->qty ?? '-') ?></td>
+                <td><?= Html::encode($soDetail->remaining_qty ?? '-') ?></td>
+                <td><?= Html::encode($detail->worfDetail->quantity_production ?? '-') ?></td>
+                <td>
+                    <button type="button" class="btn btn-primary btn-production" data-id="<?= $detail->id ?>"
+                        data-name="<?= $item->item_name ?? '-' ?>" data-actual="<?= $detail->actual_production_date ?>"
+                        data-final="<?= $detail->final_result ?>" data-waste="<?= $detail->waste ?>"
+                        data-punch="<?= $detail->punch_scrap ?>" data-refurbish="<?= $detail->refurbish ?>"
+                        data-remaining="<?= $detail->remaining_coil ?>" data-toggle="modal"
+                        data-target="#productionModal">
+                        Production
+                    </button>
 
-                        <button type="button" class="btn btn-warning btn-qc" data-id="<?= $detail->id ?>"
-                            data-name="<?= $item->item_name ?? '-' ?>" data-qc-final="<?= $detail->final_result_qc ?>"
-                            data-qc-reject="<?= $detail->reject_qc ?>" data-sample1="<?= $detail->sample_result_1_qc ?>"
-                            data-sample2="<?= $detail->sample_result_2_qc ?>"
-                            data-sample3="<?= $detail->sample_result_3_qc ?>"
-                            data-sample4="<?= $detail->sample_result_4_qc ?>"
-                            data-actual="<?= $detail->actual_production_date ?>" data-final="<?= $detail->final_result ?>"
-                            data-waste="<?= $detail->waste ?>" data-punch="<?= $detail->punch_scrap ?>"
-                            data-refurbish="<?= $detail->refurbish ?>" data-remaining="<?= $detail->remaining_coil ?>"
-                            data-document="<?= $detail->document_qc ?>" data-toggle="modal" data-target="#qcModal">
-                            QC
-                        </button>
+                    <button type="button" class="btn btn-warning btn-qc" data-id="<?= $detail->id ?>"
+                        data-name="<?= $item->item_name ?? '-' ?>" data-qc-final="<?= $detail->final_result_qc ?>"
+                        data-qc-reject="<?= $detail->reject_qc ?>" <?php for ($qc = 1; $qc <= 6; $qc++): ?>
+                        <?php for ($s = 1; $s <= 4; $s++): ?>
+                        data-sample<?= $s ?>qc<?= $qc ?>="<?= Html::encode($detail["sample_result_{$s}_qc_{$qc}"]) ?>"
+                        <?php endfor; ?> <?php endfor; ?> data-actual="<?= $detail->actual_production_date ?>"
+                        data-final="<?= $detail->final_result ?>" data-waste="<?= $detail->waste ?>"
+                        data-punch="<?= $detail->punch_scrap ?>" data-refurbish="<?= $detail->refurbish ?>"
+                        data-remaining="<?= $detail->remaining_coil ?>" data-document="<?= $detail->document_qc ?>"
+                        data-toggle="modal" data-target="#qcModal">
+                        QC
+                    </button>
 
-                    </td>
+                </td>
 
-                </tr>
+            </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
@@ -126,51 +137,51 @@ $this->params['breadcrumbs'][] = $this->title;
     if (!empty($costProductions)):
 
     ?>
-        <h3>Data Biaya Produksi</h3>
+    <h3>Data Biaya Produksi</h3>
 
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>No Production</th>
-                    <th>No Working Order</th>
-                    <th>No Sales Order</th>
-                    <th>Tanggal SO</th>
-                    <th>Tanggal Produksi</th>
-                    <th>Tipe Produksi</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>No Production</th>
+                <th>No Working Order</th>
+                <th>No Sales Order</th>
+                <th>Tanggal SO</th>
+                <th>Tanggal Produksi</th>
+                <th>Tipe Produksi</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
                 foreach ($costProductions as $i => $cost):
                 ?>
-                    <tr>
-                        <td><?= $i + 1 ?></td>
-                        <td><?= Html::encode($cost->production->no_production ?? '-') ?></td>
-                        <td><?= Html::encode($cost->worf->no_planning ?? '-') ?></td>
-                        <td><?= Html::encode($cost->so->no_so ?? '-') ?></td>
-                        <td><?= Yii::$app->formatter->asDate($cost->so_date) ?></td>
-                        <td><?= Yii::$app->formatter->asDate($cost->production_date) ?></td>
-                        <td><?= Html::encode($cost->namaTypeProduction ?? '-') ?></td>
-                        <td>
-                            <?= Html::a('View', ['rollforming/cost-production-roll-forming/view', 'id' => $cost->id], ['class' => 'btn btn-sm btn-info']) ?>
-                            <?= Html::a('Delete', ['rollforming/cost-production-roll-forming/delete', 'id' => $cost->id], [
+            <tr>
+                <td><?= $i + 1 ?></td>
+                <td><?= Html::encode($cost->production->no_production ?? '-') ?></td>
+                <td><?= Html::encode($cost->worf->no_planning ?? '-') ?></td>
+                <td><?= Html::encode($cost->so->no_so ?? '-') ?></td>
+                <td><?= Yii::$app->formatter->asDate($cost->so_date) ?></td>
+                <td><?= Yii::$app->formatter->asDate($cost->production_date) ?></td>
+                <td><?= Html::encode($cost->namaTypeProduction ?? '-') ?></td>
+                <td>
+                    <?= Html::a('View', ['rollforming/cost-production-roll-forming/view', 'id' => $cost->id], ['class' => 'btn btn-sm btn-info']) ?>
+                    <?= Html::a('Delete', ['rollforming/cost-production-roll-forming/delete', 'id' => $cost->id], [
                                 'class' => 'btn btn-sm btn-danger',
                                 'data' => [
                                     'confirm' => 'Apakah Anda yakin ingin menghapus cost production ini?',
                                     'method' => 'post',
                                 ],
                             ]) ?>
-                        </td>
-                    </tr>
+                </td>
+            </tr>
             <?php endforeach;
             endif;
             ?>
-            </tbody>
-        </table>
+        </tbody>
+    </table>
 
-        <?php
+    <?php
         \yii\bootstrap4\Modal::begin([
             'title' => '<h5 class="modal-title" id="productionModalLabel"></h5>',
             'id' => 'productionModal',
@@ -179,121 +190,144 @@ $this->params['breadcrumbs'][] = $this->title;
         ]);
         ?>
 
-        <div class="modal-body">
-            <input type="hidden" id="modal-id" name="modal-id">
+    <div class="modal-body">
+        <input type="hidden" id="modal-id" name="modal-id">
 
-            <div class="row mb-3">
-                <div class="col-md-2">
-                    <label for="modal-actual-production-date" class="form-label">Actual Production Date</label>
-                    <input type="date" class="form-control" id="modal-actual-production-date" readonly>
-                </div>
+        <div class="row mb-3">
+            <div class="col-md-2">
+                <label for="modal-actual-production-date" class="form-label">Actual Production Date</label>
+                <input type="date" class="form-control" id="modal-actual-production-date" readonly
+                    placeholder="Nothing">
+            </div>
 
-                <div class="col-md-2">
+            <div class="col-md-2">
 
-                    <label for="modal-final-result" class="form-label">Final Result</label>
-                    <input type="number" class="form-control" id="modal-final-result" readonly>
-                </div>
+                <label for="modal-final-result" class="form-label">Final Result</label>
+                <input type="number" class="form-control" id="modal-final-result" readonly placeholder="Nothing">
+            </div>
 
-                <div class="col-md-2">
+            <div class="col-md-2">
 
-                    <label for="modal-waste" class="form-label">Waste</label>
-                    <input type="number" class="form-control" id="modal-waste" readonly>
-                </div>
+                <label for="modal-waste" class="form-label">Waste (kg)</label>
+                <input type="number" class="form-control" id="modal-waste" readonly placeholder="Nothing">
+            </div>
 
-                <div class="col-md-2">
+            <div class="col-md-2">
 
-                    <label for="modal-punch-scrap" class="form-label">Punch Scrap</label>
-                    <input type="number" class="form-control" id="modal-punch-scrap" readonly>
-                </div>
+                <label for="modal-punch-scrap" class="form-label">Punch Scrap (kg)</label>
+                <input type="number" class="form-control" id="modal-punch-scrap" readonly placeholder="Nothing">
+            </div>
 
-                <div class="col-md-2">
+            <div class="col-md-2">
 
-                    <label for="modal-refurbish" class="form-label">Refurbish</label>
-                    <input type="number" class="form-control" id="modal-refurbish" readonly>
-                </div>
+                <label for="modal-refurbish" class="form-label">Refurbish (kg)</label>
+                <input type="number" class="form-control" id="modal-refurbish" readonly placeholder="Nothing">
+            </div>
 
-                <div class="col-md-2">
+            <div class="col-md-2">
 
-                    <label for="modal-remaining-coil" class="form-label">Remaining Coil</label>
-                    <input type="number" class="form-control" id="modal-remaining-coil" readonly>
-                </div>
+                <label for="modal-remaining-coil" class="form-label">Remaining Coil (kg)</label>
+                <input type="number" class="form-control" id="modal-remaining-coil" readonly placeholder="Nothing">
             </div>
         </div>
+    </div>
 
-        <?php \yii\bootstrap4\Modal::end(); ?>
-        <?php \yii\bootstrap4\Modal::begin([
+    <?php \yii\bootstrap4\Modal::end(); ?>
+    <?php \yii\bootstrap4\Modal::begin([
             'title' => '<h5 class="modal-title" id="qcModalLabel"></h5>',
             'id' => 'qcModal',
             'size' => 'modal-xl',
             'footer' => false,
         ]); ?>
 
-        <div class="modal-body">
-            <input type="hidden" id="qc-id">
-            <div class="row mb-3">
-                <div class="col-md-2">
-                    <label>Actual Prod. Date</label>
-                    <input type="text" class="form-control" id="qc-actual-date" readonly>
-                </div>
-                <div class="col-md-2">
-                    <label>Final Result</label>
-                    <input type="number" class="form-control" id="qc-final-prod" readonly>
-                </div>
-                <div class="col-md-2">
-                    <label>Waste</label>
-                    <input type="number" class="form-control" id="qc-waste" readonly>
-                </div>
-                <div class="col-md-2">
-                    <label>Punch Scrap</label>
-                    <input type="number" class="form-control" id="qc-punch" readonly>
-                </div>
-                <div class="col-md-2">
-                    <label>Refurbish</label>
-                    <input type="number" class="form-control" id="qc-refurbish" readonly>
-                </div>
-                <div class="col-md-2">
-                    <label>Remaining Coil</label>
-                    <input type="number" class="form-control" id="qc-remaining-coil" readonly>
-                </div>
+    <div class="modal-body">
+        <input type="hidden" id="qc-id">
+        <div class="row mb-3">
+            <div class="col-md-2">
+                <label>Actual Prod. Date</label>
+                <input type="text" class="form-control" id="qc-actual-date" readonly placeholder="Nothing">
             </div>
+            <div class="col-md-2">
+                <label>Final Result</label>
+                <input type="number" class="form-control" id="qc-final-prod" readonly placeholder="Nothing">
+            </div>
+            <div class="col-md-2">
+                <label>Waste (kg)</label>
+                <input type="number" class="form-control" id="qc-waste" readonly placeholder="Nothing">
+            </div>
+            <div class="col-md-2">
+                <label>Punch Scrap (kg)</label>
+                <input type="number" class="form-control" id="qc-punch" readonly placeholder="Nothing">
+            </div>
+            <div class="col-md-2">
+                <label>Refurbish (kg)</label>
+                <input type="number" class="form-control" id="qc-refurbish" readonly placeholder="Nothing">
+            </div>
+            <div class="col-md-2">
+                <label>Remaining Coil (kg)</label>
+                <input type="number" class="form-control" id="qc-remaining-coil" readonly placeholder="Nothing">
+            </div>
+        </div>
 
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <label for="qc-final-result">Final Result QC</label>
-                    <input type="number" class="form-control" id="qc-final-result" readonly>
-                </div>
-                <div class="col-md-3">
-                    <label for="qc-reject">Reject QC</label>
-                    <input type="number" class="form-control" id="qc-reject" readonly>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="qc-document" class="font-weight-bold">Dokumen QC</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="qc-document" readonly placeholder="Tidak ada file">
-                            <div class="input-group-append">
-                                <a id="qc-document-link" href="#" target="_blank" class="btn btn-secondary"
-                                    style="display: none;">
-                                    Download
-                                </a>
-                            </div>
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="qc-final-result">Final Result QC</label>
+                <input type="number" class="form-control" id="qc-final-result" readonly placeholder="Nothing">
+            </div>
+            <div class="col-md-3">
+                <label for="qc-reject">Reject QC</label>
+                <input type="number" class="form-control" id="qc-reject" readonly placeholder="Nothing">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="qc-document" class="font-weight-bold">Dokumen QC</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="qc-document" readonly placeholder="Nothing">
+                        <div class="input-group-append">
+                            <a id="qc-document-link" href="#" target="_blank" class="btn btn-secondary"
+                                style="display: none;">
+                                Download
+                            </a>
                         </div>
                     </div>
                 </div>
-
             </div>
 
-            <div class="row mb-3">
-                <?php for ($i = 1; $i <= 4; $i++): ?>
-                    <div class="col-md-3">
-                        <label for="qc-sample-<?= $i ?>">Sample <?= $i ?> QC</label>
-                        <input type="number" class="form-control" id="qc-sample-<?= $i ?>" readonly>
-                    </div>
+        </div>
+        <div class="container-fluid px-0">
+            <div class="d-flex flex-wrap justify-content-between">
+                <?php for ($qc = 1; $qc <= 6; $qc++): ?>
+                <div class="border rounded p-2" style="flex: 1 0 0; min-width: 140px; margin-right: 10px;">
+                    <table class="table table-sm table-bordered text-center mb-0">
+                        <thead>
+                            <tr>
+                                <th colspan="2">QC <?= $qc ?></th>
+                            </tr>
+                            <tr>
+                                <th>Sampel</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php for ($s = 1; $s <= 4; $s++): ?>
+                            <tr>
+                                <td><?= $s ?>.</td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm"
+                                        id="qc-sample-<?= $s ?>-qc<?= $qc ?>" readonly placeholder="Nothing">
+                                </td>
+                            </tr>
+                            <?php endfor; ?>
+                        </tbody>
+                    </table>
+                </div>
                 <?php endfor; ?>
             </div>
         </div>
 
-        <?php \yii\bootstrap4\Modal::end(); ?>
+    </div>
+
+    <?php \yii\bootstrap4\Modal::end(); ?>
 
 
 </div>
@@ -336,10 +370,13 @@ $('.btn-qc').on('click', function () {
 
     $('#qc-final-result').val($(this).data('qc-final'));
     $('#qc-reject').val($(this).data('qc-reject'));
-    $('#qc-sample-1').val($(this).data('sample1'));
-    $('#qc-sample-2').val($(this).data('sample2'));
-    $('#qc-sample-3').val($(this).data('sample3'));
-    $('#qc-sample-4').val($(this).data('sample4'));
+    for (let qc = 1; qc <= 6; qc++) {
+        for (let s = 1; s <= 4; s++) {
+            let value = $(this).data('sample' + s + 'qc' + qc);
+            $('#qc-sample-' + s + '-qc' + qc).val(value);
+        }
+    }
+
     $('#qc-document').val($(this).data('document'));
     
     $('#qc-actual-date').val(actual);

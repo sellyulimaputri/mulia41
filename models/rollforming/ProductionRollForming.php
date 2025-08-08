@@ -62,8 +62,8 @@ class ProductionRollForming extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'no_production' => 'No Production',
-            'id_so' => 'Nomor Sales Order',
-            'id_worf' => 'Nomor Working Order',
+            'id_so' => 'No Sales Order',
+            'id_worf' => 'No Working Order',
             'so_date' => 'Sales Order Date',
             'production_date' => 'Production Date',
             'type_production' => 'Type Production',
@@ -113,7 +113,7 @@ class ProductionRollForming extends \yii\db\ActiveRecord
                 return 'Unknown';
         }
     }
-    
+
     public function getNamaStatus()
     {
         switch ($this->status) {
@@ -160,11 +160,13 @@ class ProductionRollForming extends \yii\db\ActiveRecord
 
         $postFinalResultQc = Yii::$app->request->post('final_result_qc', []);
         $postRejectQc = Yii::$app->request->post('reject_qc', []);
-        $postSampleResult1Qc = Yii::$app->request->post('sample_result_1_qc', []);
-        $postSampleResult2Qc = Yii::$app->request->post('sample_result_2_qc', []);
-        $postSampleResult3Qc = Yii::$app->request->post('sample_result_3_qc', []);
-        $postSampleResult4Qc = Yii::$app->request->post('sample_result_4_qc', []);
-
+        $postSampleResults = [];
+        for ($qc = 1; $qc <= 6; $qc++) {
+            for ($s = 1; $s <= 4; $s++) {
+                $key = "sample_result_{$s}_qc_{$qc}";
+                $postSampleResults[$key] = Yii::$app->request->post($key, []);
+            }
+        }
 
         foreach ($postDetails as $d) {
             $worfDetailId = $d['id_worf_detail'];
@@ -196,11 +198,37 @@ class ProductionRollForming extends \yii\db\ActiveRecord
                     $detail->document_qc = $safeFilename;
                 }
             }
-            $detail->sample_result_1_qc = $postSampleResult1Qc[$worfDetailId] ?? 0;
-            $detail->sample_result_2_qc = $postSampleResult2Qc[$worfDetailId] ?? 0;
-            $detail->sample_result_3_qc = $postSampleResult3Qc[$worfDetailId] ?? 0;
-            $detail->sample_result_4_qc = $postSampleResult4Qc[$worfDetailId] ?? 0;
+            for ($qc = 1; $qc <= 6; $qc++) {
+                for ($s = 1; $s <= 4; $s++) {
+                    $attr = "sample_result_{$s}_qc_{$qc}";
+                    $value = $postSampleResults[$attr][$worfDetailId] ?? 0;
+                    $detail->$attr = $value;
+                }
+            }
             $detail->save(false);
+            if ($detail->reject_qc > 0) {
+                $worfDetail = \app\models\rollforming\WorkingOrderRollFormingDetail::findOne($worfDetailId);
+                if ($worfDetail !== null) {
+                    $worfDetail->quantity_production = max(0, $worfDetail->quantity_production - $detail->reject_qc);
+                    $worfDetail->save(false);
+                }
+            }
+        }
+
+        $totalRejectQc = \app\models\rollforming\ProductionRollFormingDetail::find()
+            ->where(['id_header' => $this->id])
+            ->sum('reject_qc');
+
+        if ($this->id_worf) {
+            $workingOrder = \app\models\rollforming\WorkingOrderRollForming::findOne($this->id_worf);
+            if ($workingOrder) {
+                if ($totalRejectQc > 0) {
+                    $workingOrder->status = 4; // Jika ada reject
+                } else {
+                    $workingOrder->status = 2; // Default selesai tanpa reject
+                }
+                $workingOrder->save(false);
+            }
         }
     }
 }

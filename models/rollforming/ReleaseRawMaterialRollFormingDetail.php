@@ -86,4 +86,10 @@ class ReleaseRawMaterialRollFormingDetail extends \yii\db\ActiveRecord
     {
         return $this->hasOne(MasterRawMaterial::class, ['id' => 'id_raw_material']);
     }
+    
+    
+    public function getQrs()
+    {
+        return $this->hasMany(ReleaseRawMaterialRollFormingQr::class, ['id_header_detail' => 'id']);
+    }
 }

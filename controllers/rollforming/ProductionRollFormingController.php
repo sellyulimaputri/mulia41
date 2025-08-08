@@ -3,6 +3,7 @@
 namespace app\controllers\rollforming;
 
 use Yii;
+use Mpdf\Mpdf;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
@@ -101,12 +102,6 @@ class ProductionRollFormingController extends Controller
         }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $model->saveDetailProduction(Yii::$app->request->post('Detail', []));
-
-            $workingOrder = \app\models\rollforming\WorkingOrderRollForming::findOne($id_worf);
-            if ($workingOrder !== null) {
-                $workingOrder->status = 2;
-                $workingOrder->save(false);
-            }
 
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -207,5 +202,39 @@ class ProductionRollFormingController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionPrintProduction($id)
+    {
+        $model = ProductionRollForming::findOne($id);
+        if (!$model) {
+            throw new NotFoundHttpException('Data tidak ditemukan.');
+        }
+
+        $content = $this->renderPartial('_print_production', ['model' => $model]);
+
+        $pdf = new Mpdf([
+            'format' => 'A4',
+            'orientation' => 'L',
+        ]);
+        $pdf->WriteHTML($content);
+        return $pdf->Output("Production-Roll-Forming-{$model->no_production}.pdf", 'I');
+    }
+
+    public function actionPrintQc($id)
+    {
+        $model = ProductionRollForming::findOne($id);
+        if (!$model) {
+            throw new NotFoundHttpException('Data tidak ditemukan.');
+        }
+
+        $content = $this->renderPartial('_print_qc', ['model' => $model]);
+
+        $pdf = new Mpdf([
+            'format' => 'A4',
+            'orientation' => 'L',
+        ]);
+        $pdf->WriteHTML($content);
+        return $pdf->Output("QC-Roll-Forming-{$model->no_production}.pdf", 'I');
     }
 }

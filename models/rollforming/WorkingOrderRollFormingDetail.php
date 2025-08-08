@@ -20,7 +20,6 @@ use app\models\rollforming\WorkingOrderRollForming;
 class WorkingOrderRollFormingDetail extends \yii\db\ActiveRecord
 {
 
-
     /**
      * {@inheritdoc}
      */
@@ -74,5 +73,4 @@ class WorkingOrderRollFormingDetail extends \yii\db\ActiveRecord
     {
         return $this->hasOne(SalesOrderStandardDetail::class, ['id' => 'id_so_detail']);
     }
-
 }

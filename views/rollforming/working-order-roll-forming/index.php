@@ -76,21 +76,52 @@ $this->params['breadcrumbs'][] = $this->title;
                     $searchModel->status,
                     [
                         '' => 'All Status',
-                        0 => 'Belum Direlease',
-                        1 => 'Direlease',
-                        2 => 'Diproduksi',
+                        0 => 'Not Released Yet',
+                        1 => 'Released',
+                        2 => 'Produced',
+                        3 => 'Done',
+                        4 => 'Partial QC Approve',
                     ],
                     ['class' => 'form-control']
                 ),
             ],
-
             [
-                'class' => ActionColumn::className(),
-                'template' => '{view} {update} {delete}',
-                'urlCreator' => function ($action, WorkingOrderRollForming $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                }
+                'class' => ActionColumn::class,
+                'template' => '{view} {update} {delete} {create-partial-qc}',
+                'visibleButtons' => [
+                    'update' => fn($model) => $model->status == 0,
+                    'delete' => fn($model) => $model->status == 0,
+                    'create-partial-qc' => fn($model) => $model->status == 4 && $model->productionRollForming !== null,
+                ],
+                'buttons' => [
+                    'create-partial-qc' => function ($url, $model, $key) {
+                        $production = $model->productionRollForming;
+                        if ($production === null) {
+                            return ''; // jika tidak ada production terkait
+                        }
+                        return Html::a(
+                            '<span class="fas fa-check-circle"></span>',
+                            ['rollforming/working-order-roll-forming/create-partial-qc-approve', 'id' => $production->id],
+                            [
+                                'title' => 'Create Partial QC Approve',
+                                'aria-label' => 'Create Partial QC Approve',
+                                'data-pjax' => '0',
+                                'data-confirm' => 'Apakah Anda yakin ingin membuat Partial QC Approve?'
+                            ]
+                        );
+                    },
+                ],
+                'urlCreator' => function ($action, $model, $key, $index) {
+                    if ($action === 'create-partial-qc') {
+                        $production = $model->productionRollForming;
+                        if ($production !== null) {
+                            return Url::to(['rollforming/working-order-roll-forming/create-partial-qc-approve', 'id' => $production->id]);
+                        }
+                    }
+                    return Url::to([$action, 'id' => $model->id]);
+                },
             ],
+
         ],
     ]); ?>
 

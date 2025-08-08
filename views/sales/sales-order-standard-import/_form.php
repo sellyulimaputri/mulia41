@@ -1,5 +1,6 @@
 <?php
 
+use app\models\master\BusinessPartner;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
@@ -29,7 +30,7 @@ use app\models\master\MasterCustomer;
 
         <div class="col-md-2">
             <?= $form->field($model, 'id_customer')->widget(SearchableSelect::class, [
-                'items' => MasterCustomer::getDropdownList(),
+                'items' => BusinessPartner::getDropdownList(),
                 'options' => ['class' => 'form-control'],
                 'prompt' => 'Pilih Customer',
             ]) ?>

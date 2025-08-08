@@ -79,7 +79,8 @@ use yii\widgets\ActiveForm;
                         <!-- <div class="btn-group"> -->
                         <button type="button" class="btn btn-primary btn-production" data-toggle="modal"
                             data-target="#productionModal" data-id="<?= $detail->id ?>"
-                            data-name="<?= $detail->soDetail->item->item_name ?? '-' ?>">
+                            data-name="<?= $detail->soDetail->item->item_name ?? '-' ?>"
+                            data-qty_production="<?= $detail->quantity_production ?>">
                             Production
                         </button>
 
@@ -100,25 +101,27 @@ use yii\widgets\ActiveForm;
                 <input type="date" class="form-control" name="actual_production_date[<?= $detail->id ?>]"
                     style="display:none;">
                 <input type="number" class="form-control" name="final_result[<?= $detail->id ?>]" style="display:none;">
-                <input type="number" class="form-control" name="waste[<?= $detail->id ?>]" style="display:none;">
-                <input type="number" class="form-control" name="punch_scrap[<?= $detail->id ?>]" style="display:none;">
-                <input type="number" class="form-control" name="refurbish[<?= $detail->id ?>]" style="display:none;">
-                <input type="number" class="form-control" name="remaining_coil[<?= $detail->id ?>]" style="display:none;">
+                <input type="number" class="form-control" name="waste[<?= $detail->id ?>]" style="display:none;"
+                    step="0.01">
+                <input type="number" class="form-control" name="punch_scrap[<?= $detail->id ?>]" style="display:none;"
+                    step="0.01">
+
+                <input type="number" class="form-control" name="refurbish[<?= $detail->id ?>]" style="display:none;"
+                    step="0.01">
+                <input type="number" class="form-control" name="remaining_coil[<?= $detail->id ?>]" style="display:none;"
+                    step="0.01">
 
                 <input type="number" class="form-control" name="final_result_qc[<?= $detail->id ?>]" style="display:none;">
                 <input type="number" class="form-control" name="reject_qc[<?= $detail->id ?>]" style="display:none;">
                 <!-- Hidden file input untuk QC, agar tersubmit -->
                 <input type="file" name="document_qc[<?= $detail->id ?>]" class="document-upload-hidden"
                     id="hidden-file-<?= $detail->id ?>" style="display:none;">
-                <input type="number" class="form-control" name="sample_result_1_qc[<?= $detail->id ?>]"
-                    style="display:none;">
-                <input type="number" class="form-control" name="sample_result_2_qc[<?= $detail->id ?>]"
-                    style="display:none;">
-                <input type="number" class="form-control" name="sample_result_3_qc[<?= $detail->id ?>]"
-                    style="display:none;">
-                <input type="number" class="form-control" name="sample_result_4_qc[<?= $detail->id ?>]"
-                    style="display:none;">
-
+                <?php for ($set = 1; $set <= 6; $set++): ?>
+                    <?php for ($sample = 1; $sample <= 4; $sample++): ?>
+                        <input type="number" class="form-control"
+                            name="sample_result_<?= $sample ?>_qc_<?= $set ?>[<?= $detail->id ?>]" style="display:none;">
+                    <?php endfor; ?>
+                <?php endfor; ?>
 
                 <input type="hidden" name="Detail[<?= $i ?>][id_worf_detail]" value="<?= $detail->id ?>" />
             <?php endforeach; ?>
@@ -151,32 +154,36 @@ use yii\widgets\ActiveForm;
         <div class="row mb-3">
             <div class="col-md-2">
                 <label for="modal-actual-production-date" class="form-label">Actual Production Date</label>
-                <input type="date" class="form-control" id="modal-actual-production-date">
+                <input type="date" class="form-control" id="modal-actual-production-date" readonly>
             </div>
 
             <div class="col-md-2">
                 <label for="modal-final-result" class="form-label">Final Result</label>
-                <input type="number" class="form-control" id="modal-final-result" placeholder="Enter Final Result">
+                <input type="number" class="form-control" id="modal-final-result" placeholder="Enter Final Result"
+                    max="...">
             </div>
 
             <div class="col-md-2">
-                <label for="modal-waste" class="form-label">Waste</label>
-                <input type="number" class="form-control" id="modal-waste" placeholder="Enter Waste">
+                <label for="modal-waste" class="form-label">Waste (kg)</label>
+                <input type="number" class="form-control" id="modal-waste" placeholder="Enter Waste" step="0.01">
             </div>
 
             <div class="col-md-2">
-                <label for="modal-punch-scrap" class="form-label">Punch Scrap</label>
-                <input type="number" class="form-control" id="modal-punch-scrap" placeholder="Enter Punch Scrap">
+                <label for="modal-punch-scrap" class="form-label">Punch Scrap (kg)</label>
+                <input type="number" class="form-control" id="modal-punch-scrap" placeholder="Enter Punch Scrap"
+                    step="0.01">
             </div>
 
             <div class="col-md-2">
-                <label for="modal-refurbish" class="form-label">Refurbish</label>
-                <input type="number" class="form-control" id="modal-refurbish" placeholder="Enter Refurbish">
+                <label for="modal-refurbish" class="form-label">Refurbish (kg)</label>
+                <input type="number" class="form-control" id="modal-refurbish" placeholder="Enter Refurbish"
+                    step="0.01">
             </div>
 
             <div class="col-md-2">
-                <label for="modal-remaining-coil" class="form-label">Remaining Coil</label>
-                <input type="number" class="form-control" id="modal-remaining-coil" placeholder="Enter Remaining Coil">
+                <label for="modal-remaining-coil" class="form-label">Remaining Coil (kg)</label>
+                <input type="number" class="form-control" id="modal-remaining-coil" placeholder="Enter Remaining Coil"
+                    step="0.01">
             </div>
         </div>
         <button type="button" class="btn btn-success" id="saveProductionDetail">Save</button>
@@ -203,19 +210,19 @@ use yii\widgets\ActiveForm;
                 <input type="number" class="form-control" id="qc-final-prod" readonly placeholder="Automatic">
             </div>
             <div class="col-md-2">
-                <label>Waste</label>
+                <label>Waste (kg)</label>
                 <input type="number" class="form-control" id="qc-waste" readonly placeholder="Automatic">
             </div>
             <div class="col-md-2">
-                <label>Punch Scrap</label>
+                <label>Punch Scrap (kg)</label>
                 <input type="number" class="form-control" id="qc-punch" readonly placeholder="Automatic">
             </div>
             <div class="col-md-2">
-                <label>Refurbish</label>
+                <label>Refurbish (kg)</label>
                 <input type="number" class="form-control" id="qc-refurbish" readonly placeholder="Automatic">
             </div>
             <div class="col-md-2">
-                <label>Remaining Coil</label>
+                <label>Remaining Coil (kg)</label>
                 <input type="number" class="form-control" id="qc-remaining-coil" readonly placeholder="Automatic">
             </div>
         </div>
@@ -228,24 +235,46 @@ use yii\widgets\ActiveForm;
 
             <div class="col-md-3">
                 <label for="qc-reject" class="form-label">Reject QC</label>
-                <input type="number" class="form-control" id="qc-reject" placeholder="Enter Reject Data">
+                <input type="number" class="form-control" id="qc-reject" placeholder="Reject Data" readonly>
             </div>
 
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
                 <label class="form-label">Upload Dokumen QC</label>
                 <input type="text" class="form-control" id="qc-document-placeholder" readonly
                     placeholder="Pilih file di form utama (lihat tabel)">
-            </div>
+            </div> -->
         </div>
-        <h2 style="margin-top:50px;">Sample Result</h2>
-        <hr>
-        <div class="row mb-3">
-            <?php for ($s = 1; $s <= 4; $s++): ?>
-                <div class="col-md-3">
-                    <label for="qc-sample-<?= $s ?>" class="form-label">Sample <?= $s ?> QC</label>
-                    <input type="number" class="form-control" id="qc-sample-<?= $s ?>" placeholder="Enter Result">
-                </div>
-            <?php endfor; ?>
+        <h4 style="margin-top:50px;">Sample Result</h4>
+        <br>
+        <div class="w-100">
+            <div class="d-flex flex-nowrap" style="min-width: max-content;">
+                <?php for ($set = 1; $set <= 6; $set++): ?>
+                    <div class="me-2" style="width: 180px;">
+                        <table class="table table-bordered table-sm text-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Sample QC <?= $set ?></th>
+                                </tr>
+                                <tr>
+                                    <th>Sampel</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php for ($sample = 1; $sample <= 4; $sample++): ?>
+                                    <tr>
+                                        <td><?= $sample ?>.</td>
+                                        <td>
+                                            <input type="number" class="form-control form-control-sm sample-qc"
+                                                data-sample="<?= $sample ?>" data-set="<?= $set ?>" placeholder="Enter Result">
+                                        </td>
+                                    </tr>
+                                <?php endfor; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endfor; ?>
+            </div>
         </div>
 
         <button type="button" class="btn btn-success" id="saveQcDetail">Save QC</button>
@@ -254,21 +283,20 @@ use yii\widgets\ActiveForm;
     <?php \yii\bootstrap4\Modal::end(); ?>
 
 
-</div>
-<?php
-$js = <<<JS
+</div><?php
+        $js = <<<JS
 $('.btn-production').on('click', function () {
     var id = $(this).data('id');
     var name = $(this).data('name');
+    var qtyProduction = parseFloat($(this).data('qty_production')) || 0;
 
-    // Set ID ke hidden field
+
     $('#modal-id').val(id);
-
-    // Set title modal
     $('#productionModalLabel').text('Form Roll Forming ' + name);
+    $('#modal-actual-production-date').val($('#productionrollforming-production_date').val());
+    $('#modal-final-result').data('max', qtyProduction);
+    $('#modal-final-result').attr('max', qtyProduction);
 
-    // Kosongkan input modal
-    $('#modal-actual-production-date').val('');
     $('#modal-final-result').val('');
     $('#modal-waste').val('');
     $('#modal-punch-scrap').val('');
@@ -276,31 +304,30 @@ $('.btn-production').on('click', function () {
     $('#modal-remaining-coil').val('');
 });
 
-
 $('#saveProductionDetail').on('click', function () {
     var id = $('#modal-id').val();
+    var finalResult = parseFloat($('#modal-final-result').val()) || 0;
+    var maxQty = parseFloat($('#modal-final-result').data('max')) || 0;
 
-    // Salin nilai dari modal ke input tersembunyi
+    if (finalResult > maxQty) {
+        alert('Final Result tidak boleh lebih dari Qty Produksi (' + maxQty + ')');
+        return;
+    }
     $('input[name="actual_production_date[' + id + ']"]').val($('#modal-actual-production-date').val());
     $('input[name="final_result[' + id + ']"]').val($('#modal-final-result').val());
     $('input[name="waste[' + id + ']"]').val($('#modal-waste').val());
     $('input[name="punch_scrap[' + id + ']"]').val($('#modal-punch-scrap').val());
     $('input[name="refurbish[' + id + ']"]').val($('#modal-refurbish').val());
     $('input[name="remaining_coil[' + id + ']"]').val($('#modal-remaining-coil').val());
-
-    // Tutup modal (Bootstrap 4)
     $('#productionModal').modal('hide');
 });
 
-// QC Modal Open
 $('.btn-qc').on('click', function () {
     var id = $(this).data('id');
     var name = $(this).data('name');
 
     $('#qc-modal-id').val(id);
     $('#qcModalLabel').text('Form QC untuk ' + name);
-
-    // Ambil data dari input hidden yang diisi oleh modal production
     $('#qc-actual-date').val($('input[name="actual_production_date[' + id + ']"]').val());
     $('#qc-final-prod').val($('input[name="final_result[' + id + ']"]').val());
     $('#qc-waste').val($('input[name="waste[' + id + ']"]').val());
@@ -308,53 +335,64 @@ $('.btn-qc').on('click', function () {
     $('#qc-refurbish').val($('input[name="refurbish[' + id + ']"]').val());
     $('#qc-remaining-coil').val($('input[name="remaining_coil[' + id + ']"]').val());
 
-    // Kosongkan input QC
     $('#qc-final-result').val('');
     $('#qc-reject').val('');
-    $('#qc-document').val('');
-    for (var i = 1; i <= 4; i++) {
-        $('#qc-sample-' + i).val('');
-    }
-    
+    $('.sample-qc').val('');
+
     var fileInput = $('input#hidden-file-' + id)[0];
     var fileName = fileInput && fileInput.files[0] ? fileInput.files[0].name : '';
     $('#qc-document-placeholder').val(fileName);
 });
 
-
-// QC Modal Save
 $('#saveQcDetail').on('click', function () {
     var id = $('#qc-modal-id').val();
+    var finalResultProduction = parseFloat($('#qc-final-prod').val()) || 0;
+    var finalResultQC = parseFloat($('#qc-final-result').val()) || 0;
+
+    if (finalResultQC > finalResultProduction) {
+        alert('Final Result QC tidak boleh lebih dari Final Result Produksi (' + finalResultProduction + ')');
+        return;
+    }
 
     $('input[name="final_result_qc[' + id + ']"]').val($('#qc-final-result').val());
     $('input[name="reject_qc[' + id + ']"]').val($('#qc-reject').val());
-    $('input[name="sample_result_1_qc[' + id + ']"]').val($('#qc-sample-1').val());
-    $('input[name="sample_result_2_qc[' + id + ']"]').val($('#qc-sample-2').val());
-    $('input[name="sample_result_3_qc[' + id + ']"]').val($('#qc-sample-3').val());
-    $('input[name="sample_result_4_qc[' + id + ']"]').val($('#qc-sample-4').val());
 
-    // File input tidak dapat di-set dengan JavaScript, tetap disimpan manual oleh user
+    $('.sample-qc').each(function () {
+        var sample = $(this).data('sample');
+        var set = $(this).data('set');
+        var val = $(this).val();
+        var name = 'sample_result_' + sample + '_qc_' + set + '[' + id + ']';
+        $('input[name="' + name + '"]').val(val);
+    });
 
     $('#qcModal').modal('hide');
 });
 
-// Tombol upload file per baris
 $('.btn-upload-file').on('click', function () {
     var id = $(this).data('id');
     $('#hidden-file-' + id).click();
 });
-// Tampilkan nama file di placeholder saat file dipilih
+
 $('input[type="file"]').on('change', function () {
     var id = $(this).attr('id').replace('hidden-file-', '');
     var fileName = this.files[0] ? this.files[0].name : '';
-
     if ($('#qcModal').hasClass('show') && $('#qc-modal-id').val() == id) {
         $('#qc-document-placeholder').val(fileName);
     }
 });
+$('#qc-final-result').on('input', function () {
+    var finalResultProduction = parseFloat($('#qc-final-prod').val()) || 0;
+    var finalResultQC = parseFloat($(this).val()) || 0;
+
+    var reject = finalResultProduction - finalResultQC;
+
+    // Jangan biarkan nilai negatif
+    if (reject < 0) reject = 0;
+
+    $('#qc-reject').val(reject);
+});
 
 JS;
 
-$this->registerJs($js, \yii\web\View::POS_READY);
-
-?>
+        $this->registerJs($js, \yii\web\View::POS_READY);
+        ?>

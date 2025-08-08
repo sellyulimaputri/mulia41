@@ -59,9 +59,9 @@ class ReleaseRawMaterialRollForming extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'no_release' => 'No Release',
-            'id_so' => 'No SO',
-            'id_worf' => 'No SPK',
-            'so_date' => 'So Date',
+            'id_so' => 'No Sales Order',
+            'id_worf' => 'No Working Order',
+            'so_date' => 'Sales Order Date',
             'worf_date' => 'Production Date',
             'type_production' => 'Type Production',
             'notes' => 'Notes',
@@ -109,7 +109,7 @@ class ReleaseRawMaterialRollForming extends \yii\db\ActiveRecord
                 return 'Unknown';
         }
     }
-    
+
     public function initializeFromWorkingOrder()
     {
         if ($this->id_worf) {
@@ -135,23 +135,68 @@ class ReleaseRawMaterialRollForming extends \yii\db\ActiveRecord
 
     public function saveDetailReleases($postDetails)
     {
+        $validatedDetails = [];
+
         foreach ($postDetails as $d) {
-            $detail = new \app\models\rollforming\ReleaseRawMaterialRollFormingDetail();
-            $detail->id_header = $this->id;
-            $detail->id_worf_detail = $d['id_worf_detail'];
-
             $detailWorf = \app\models\rollforming\WorkingOrderRollFormingDetail::findOne($d['id_worf_detail']);
-            if ($detailWorf && $detailWorf->soDetail && $detailWorf->soDetail->item) {
-                $length = $detailWorf->soDetail->length ?? 0;
-                $quantity = $detailWorf->quantity_production ?? 0;
-                $rata = $detailWorf->soDetail->item->rawMaterial->average ?? 1;
-
-                $detail->reference_max_release = ceil(($length * $quantity) / $rata);
-
-                $detail->id_raw_material = $detailWorf->soDetail->item->id_raw_material ?? null;
+            if (!$detailWorf || !$detailWorf->soDetail || !$detailWorf->soDetail->item) {
+                continue;
             }
 
-            $detail->save(false);
+            $length = $detailWorf->soDetail->length ?? 0;
+            $quantity = $detailWorf->quantity_production ?? 0;
+            $rata = $detailWorf->soDetail->item->rawMaterial->weight ?? 1;
+            $referenceMax = ceil(($length * $quantity) / $rata);
+
+            $totalBeratAwal = 0;
+            $scannedIds = $d['scanned_ids'] ?? [];
+
+            if (!empty($scannedIds) && is_array($scannedIds)) {
+                $itemDetails = \app\models\purchasing\GoodRecieptItemDetail::find()
+                    ->where(['id' => $scannedIds])
+                    ->all();
+
+                foreach ($itemDetails as $itemDetail) {
+                    $totalBeratAwal += $itemDetail->berat_awal ?? 0;
+                }
+
+                // if ($totalBeratAwal > $referenceMax) {
+                //     $itemName = $detailWorf->soDetail->item->item_name ?? 'Item Tidak Diketahui';
+                //     throw new \Exception(
+                //         "Detail <strong>{$itemName}</strong>: berat hasil scan (<strong>{$totalBeratAwal}</strong>) melebihi batas maksimum (<strong>{$referenceMax}</strong>)."
+                //     );
+                // }
+            }
+
+            $validatedDetails[] = [
+                'modelWorf' => $detailWorf,
+                'reference_max' => $referenceMax,
+                'raw_material_id' => $detailWorf->soDetail->item->id_raw_material ?? null,
+                'scanned_ids' => $scannedIds,
+            ];
         }
+
+        foreach ($validatedDetails as $data) {
+            $detail = new \app\models\rollforming\ReleaseRawMaterialRollFormingDetail();
+            $detail->id_header = $this->id;
+            $detail->id_worf_detail = $data['modelWorf']->id;
+            $detail->reference_max_release = $data['reference_max'];
+            $detail->id_raw_material = $data['raw_material_id'];
+            if (!$detail->save()) {
+                throw new \Exception("Gagal menyimpan detail release (ID WORF Detail: {$data['modelWorf']->id}).");
+            }
+
+            foreach ($data['scanned_ids'] as $scanId) {
+                $qr = new \app\models\rollforming\ReleaseRawMaterialRollFormingQr();
+                $qr->id_header_detail = $detail->id;
+                $qr->id_scan_result = $scanId; // ini adalah ID dari good_reciept_item_detail
+                if (!$qr->save()) {
+                    $errors = json_encode($qr->getErrors());
+                    throw new \Exception("Gagal menyimpan QR code untuk detail release. Error: {$errors}");
+                }
+            }
+        }
+
+        return true;
     }
 }

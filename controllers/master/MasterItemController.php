@@ -2,8 +2,8 @@
 
 namespace app\controllers\master;
 
-use app\models\master\MasterItem;
-use app\models\master\MasterItemSearch;
+use app\models\MasterItem;
+use app\models\MasterItemSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;

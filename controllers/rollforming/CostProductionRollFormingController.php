@@ -109,6 +109,17 @@ class CostProductionRollFormingController extends Controller
                 $production->status = 1;
                 $production->save(false);
             }
+            if ($model->id_worf) {
+                $workingOrder = \app\models\rollforming\WorkingOrderRollForming::findOne($model->id_worf);
+                if ($workingOrder !== null) {
+                    if ($workingOrder->status == 2) {
+                        $workingOrder->status = 3;
+                        $workingOrder->save(false);
+                    }
+                    // Kalau statusnya 4, tidak diubah (tetap 4)
+                }
+            }
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -159,6 +170,17 @@ class CostProductionRollFormingController extends Controller
             $production->status = 0;
             $production->save(false);
         }
+        if ($model->id_worf) {
+            $workingOrder = \app\models\rollforming\WorkingOrderRollForming::findOne($model->id_worf);
+            if ($workingOrder !== null) {
+                if ($workingOrder->status == 3) {
+                    $workingOrder->status = 2;
+                    $workingOrder->save(false);
+                }
+                // Kalau statusnya 4, tidak diubah (tetap 4)
+            }
+        }
+
         // Lalu hapus header-nya
         $model->delete();
 

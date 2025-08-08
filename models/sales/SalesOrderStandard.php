@@ -2,6 +2,7 @@
 
 namespace app\models\sales;
 
+use app\models\master\BusinessPartner;
 use Yii;
 use app\models\master\MasterItem;
 use app\models\master\MasterCustomer;
@@ -44,7 +45,7 @@ class SalesOrderStandard extends \yii\db\ActiveRecord
             [['tanggal', 'deliver_date'], 'safe'],
             [['id_customer'], 'integer'],
             [['no_so'], 'string', 'max' => 255],
-            [['id_customer'], 'exist', 'skipOnError' => true, 'targetClass' => MasterCustomer::class, 'targetAttribute' => ['id_customer' => 'id']],
+            [['id_customer'], 'exist', 'skipOnError' => true, 'targetClass' => BusinessPartner::class, 'targetAttribute' => ['id_customer' => 'id']],
         ];
     }
 
@@ -55,10 +56,10 @@ class SalesOrderStandard extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'no_so' => 'Nomor Sales Order',
-            'tanggal' => 'Tanggal',
+            'no_so' => 'No Sales Order',
+            'tanggal' => 'Date',
             'id_customer' => 'Customer',
-            'deliver_date' => 'Deliver Date',
+            'deliver_date' => 'Delivery Date',
         ];
     }
 
@@ -69,7 +70,7 @@ class SalesOrderStandard extends \yii\db\ActiveRecord
      */
     public function getCustomer()
     {
-        return $this->hasOne(MasterCustomer::class, ['id' => 'id_customer']);
+        return $this->hasOne(BusinessPartner::class, ['id' => 'id_customer']);
     }
 
     /**

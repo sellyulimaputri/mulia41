@@ -3,11 +3,15 @@
 namespace app\controllers\rollforming;
 
 use Yii;
+use Mpdf\Mpdf;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
+use Mpdf\Output\Destination;
 use yii\web\NotFoundHttpException;
-use app\models\sales\SalesOrderStandard;
+use app\models\rollforming\ProductionRollForming;
 use app\models\rollforming\WorkingOrderRollForming;
+use app\models\rollforming\ProductionRollFormingDetail;
+use app\models\rollforming\WorkingOrderRollFormingDetail;
 use app\models\rollforming\WorkingOrderRollFormingSearch;
 
 /**
@@ -47,6 +51,63 @@ class WorkingOrderRollFormingController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+
+    public function actionCreatePartialQcApprove($id)
+    {
+        $production = ProductionRollForming::findOne($id);
+        if (!$production) {
+            throw new NotFoundHttpException("Production not found.");
+        }
+
+        $oldWorf = WorkingOrderRollForming::findOne($production->id_worf);
+        if (!$oldWorf || $oldWorf->status != 4) {
+            Yii::$app->session->setFlash('error', 'Partial QC Approve hanya bisa dilakukan jika status Working Order = 4 (Selesai Produksi).');
+            return $this->redirect(['rollforming/working-order-roll-forming/index']);
+        }
+
+        $newWorf = new WorkingOrderRollForming();
+        $newWorf->no_planning = 'REJ-' . $production->no_production;
+        $newWorf->id_so = $production->id_so;
+        $newWorf->so_date = $production->so_date;
+        $newWorf->production_date = date('Y-m-d');
+        $newWorf->type_production = $production->type_production;
+        $newWorf->notes = 'Auto-created from reject QC of Production #' . $production->no_production;
+        $newWorf->status = 0;
+
+        if (!$newWorf->save()) {
+            Yii::$app->session->setFlash('error', 'Failed to create new Working Order.');
+            return $this->redirect(['rollforming/production-roll-forming/view', 'id' => $id]);
+        }
+
+        $rejectDetails = ProductionRollFormingDetail::find()
+            ->where(['id_header' => $production->id])
+            ->andWhere(['>', 'reject_qc', 0])
+            ->all();
+
+        foreach ($rejectDetails as $detail) {
+            $newDetail = new WorkingOrderRollFormingDetail();
+            $newDetail->id_header = $newWorf->id;
+            $newDetail->id_so_detail = $detail->worfDetail->id_so_detail ?? null;
+            $newDetail->quantity_production = $detail->reject_qc;
+
+            if (!$newDetail->save()) {
+                Yii::$app->session->addFlash('error', 'Failed saving detail item.');
+            }
+        }
+        $oldWorf = WorkingOrderRollForming::findOne($production->id_worf);
+        if ($oldWorf && $oldWorf->status == 4) {
+            if ($production->status == 1) {
+                $oldWorf->status = 3;
+            } elseif ($production->status == 0) {
+                $oldWorf->status = 2;
+            }
+            $oldWorf->save(false);
+        }
+
+        Yii::$app->session->setFlash('success', 'Partial QC approved. New Working Order created.');
+        return $this->redirect(['rollforming/working-order-roll-forming/view', 'id' => $newWorf->id]);
     }
 
     /**
@@ -115,6 +176,13 @@ class WorkingOrderRollFormingController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+
+        // Cegah edit jika status ≠ 0
+        if ($model->status != 0) {
+            Yii::$app->session->setFlash('error', 'Data tidak bisa diedit karena status status sudah Direlease');
+            return $this->redirect(['index']);
+        }
+
         $so = \app\models\sales\SalesOrderStandard::findOne($model->id_so);
         $soDetails = $so ? $so->salesOrderStandardDetails : [];
 
@@ -129,7 +197,6 @@ class WorkingOrderRollFormingController extends Controller
             if (!empty($errors)) {
                 Yii::$app->session->setFlash('error', implode('<br>', $errors));
             } elseif ($model->save()) {
-                // Hapus dulu detail lama
                 \app\models\rollforming\WorkingOrderRollFormingDetail::deleteAll(['id_header' => $model->id]);
                 $model->saveDetails($qtyProductions);
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -141,7 +208,6 @@ class WorkingOrderRollFormingController extends Controller
             'soDetails' => $soDetails,
         ]);
     }
-
 
     /**
      * Deletes an existing WorkingOrderRollForming model.
@@ -155,11 +221,49 @@ class WorkingOrderRollFormingController extends Controller
     {
         $model = $this->findModel($id);
 
+        // Cek apakah WO ini adalah hasil dari reject (misalnya dari prefix no_planning)
+        if (strpos($model->no_planning, 'REJ-') === 0) {
+            // Ambil nomor produksi dari no_planning: 'REJ-PRD0001' => 'PRD0001'
+            $originalProductionNo = substr($model->no_planning, 4);
+            $originalProduction = \app\models\rollforming\ProductionRollForming::find()
+                ->where(['no_production' => $originalProductionNo])
+                ->one();
+
+            if ($originalProduction && $originalProduction->id_worf) {
+                $originalWorf = WorkingOrderRollForming::findOne($originalProduction->id_worf);
+                if ($originalWorf && $originalWorf->status == 2 || $originalWorf->status == 3) {
+                    $originalWorf->status = 4;
+                    $originalWorf->save(false);
+                }
+            }
+        }
+
+        // Hapus semua detail
         \app\models\rollforming\WorkingOrderRollFormingDetail::deleteAll(['id_header' => $model->id]);
 
+        // Hapus header
         $model->delete();
 
+        Yii::$app->session->setFlash('success', 'Working Order berhasil dihapus.');
         return $this->redirect(['index']);
+    }
+
+    public function actionPrint($id)
+    {
+        $model = $this->findModel($id);
+
+        $content = $this->renderPartial('_print_working_order', [
+            'model' => $model,
+        ]);
+
+        $pdf = new Mpdf([
+            'format' => 'A4',
+            'orientation' => 'L',
+        ]);
+
+        $pdf->WriteHTML($content);
+
+        return $pdf->Output("Working-Order-{$model->no_planning}.pdf", Destination::INLINE);
     }
 
     /**

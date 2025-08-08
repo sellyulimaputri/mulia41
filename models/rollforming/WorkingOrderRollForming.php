@@ -56,7 +56,7 @@ class WorkingOrderRollForming extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'no_planning' => 'No Planning',
-            'id_so' => 'Sales Order',
+            'id_so' => 'No Sales Order',
             'so_date' => 'Sales Order Date',
             'production_date' => 'Production Date',
             'type_production' => 'Type Production',
@@ -85,6 +85,18 @@ class WorkingOrderRollForming extends \yii\db\ActiveRecord
         return $this->hasMany(WorkingOrderRollFormingDetail::class, ['id_header' => 'id']);
     }
 
+    public function getProductionRollForming()
+    {
+        return $this->hasOne(ProductionRollForming::class, ['id_worf' => 'id']);
+    }
+
+    public function getReleaseRawMaterialRollFormingDetails()
+    {
+        return $this->hasMany(ReleaseRawMaterialRollFormingDetail::class, ['id_worf_detail' => 'id'])
+            ->via('workingOrderRollFormingDetails');
+    }
+
+
     public function getNamaTypeProduction()
     {
         switch ($this->type_production) {
@@ -101,11 +113,15 @@ class WorkingOrderRollForming extends \yii\db\ActiveRecord
     {
         switch ($this->status) {
             case 0:
-                return 'Belum Direlease';
+                return 'Not Released Yet';
             case 1:
-                return 'Direlease';
+                return 'Released';
             case 2:
-                return 'Diproduksi';
+                return 'Produced';
+            case 3:
+                return 'Done';
+            case 4:
+                return 'Partial QC Approve';
             default:
                 return 'Unknown';
         }
@@ -171,5 +187,4 @@ class WorkingOrderRollForming extends \yii\db\ActiveRecord
             }
         );
     }
-
 }

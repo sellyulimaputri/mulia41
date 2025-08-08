@@ -1,6 +1,7 @@
 <?php
 
 use app\models\master\MasterItem;
+use app\models\MasterRawMaterial;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -28,7 +29,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'item_name',
             'item_code',
-            'id_raw_material',
+            [
+                'attribute' => 'id_raw_material',
+                'value' => function($model){
+                    $model2 = MasterRawMaterial::findOne($model->id_raw_material);
+                    return $model2->item_name;
+                }
+            ],
             'notes',
             [
                 'class' => ActionColumn::className(),
