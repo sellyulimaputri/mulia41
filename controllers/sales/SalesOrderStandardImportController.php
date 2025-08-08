@@ -3,9 +3,11 @@
 namespace app\controllers\sales;
 
 use Yii;
+use yii\web\Response;
 use yii\web\Controller;
 use yii\web\UploadedFile;
 use yii\filters\VerbFilter;
+use yii\widgets\ActiveForm;
 use app\models\master\MasterItem;
 use yii\web\NotFoundHttpException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -76,6 +78,11 @@ class SalesOrderStandardImportController extends Controller
     {
         $model = new SalesOrderStandard();
 
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
+        
         if (Yii::$app->request->isPost) {
             $model->load(Yii::$app->request->post());
             $excelFile = UploadedFile::getInstanceByName('excelFile');

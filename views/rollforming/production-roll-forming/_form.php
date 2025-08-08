@@ -17,11 +17,11 @@ use yii\widgets\ActiveForm;
 
     <div class="row">
         <div class="col-md-2">
-            <?= $form->field($model, 'no_production')->textInput(['maxlength' => true, 'placeholder' => 'Enter No Production']) ?>
+            <?= $form->field($model, 'no_production')->textInput(['maxlength' => true, 'placeholder' => 'Enter No Production', 'readonly' => true]) ?>
         </div>
 
         <div class="col-md-2">
-            <label class="control-label">Nomor SO</label>
+            <label class="control-label">Code Project</label>
             <input type="text" class="form-control" value="<?= $model->so ? $model->so->no_so : '' ?>" readonly>
             <?= $form->field($model, 'id_so')->hiddenInput()->label(false) ?>
         </div>
@@ -60,6 +60,7 @@ use yii\widgets\ActiveForm;
                 <th>Qty Order</th>
                 <th>Remaining Qty</th>
                 <th>Qty Produksi</th>
+                <th>Uom</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -75,6 +76,10 @@ use yii\widgets\ActiveForm;
                     <td><?= $detail->soDetail->qty ?? '-' ?></td>
                     <td><?= $detail->soDetail->remaining_qty ?? '-' ?></td>
                     <td><?= $detail->quantity_production ?? '-' ?></td>
+
+                    <td>
+                        <?= ($rm = $detail->soDetail->rawMaterial) && ($uom = \app\models\MasterUom::findOne($rm->uom)) ? $uom->nama : '-' ?>
+                    </td>
                     <td>
                         <!-- <div class="btn-group"> -->
                         <button type="button" class="btn btn-primary btn-production" data-toggle="modal"
@@ -101,6 +106,8 @@ use yii\widgets\ActiveForm;
                 <input type="date" class="form-control" name="actual_production_date[<?= $detail->id ?>]"
                     style="display:none;">
                 <input type="number" class="form-control" name="final_result[<?= $detail->id ?>]" style="display:none;">
+                <input type="number" class="form-control" name="final_result_weight[<?= $detail->id ?>]"
+                    style="display:none;" step="0.01">
                 <input type="number" class="form-control" name="waste[<?= $detail->id ?>]" style="display:none;"
                     step="0.01">
                 <input type="number" class="form-control" name="punch_scrap[<?= $detail->id ?>]" style="display:none;"
@@ -152,35 +159,41 @@ use yii\widgets\ActiveForm;
         <input type="hidden" id="modal-id" name="modal-id">
 
         <div class="row mb-3">
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label for="modal-actual-production-date" class="form-label">Actual Production Date</label>
                 <input type="date" class="form-control" id="modal-actual-production-date" readonly>
             </div>
 
-            <div class="col-md-2">
-                <label for="modal-final-result" class="form-label">Final Result</label>
+            <div class="col-md-3">
+                <label for="modal-final-result" class="form-label">Final Result (Qty)</label>
                 <input type="number" class="form-control" id="modal-final-result" placeholder="Enter Final Result"
                     max="...">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-3">
+                <label for="modal-final-result-weight" class="form-label">Final Result (Kg)</label>
+                <input type="number" class="form-control" id="modal-final-result-weight"
+                    placeholder="Enter Final Result" step="0.01">
+            </div>
+
+            <div class="col-md-3">
                 <label for="modal-waste" class="form-label">Waste (kg)</label>
                 <input type="number" class="form-control" id="modal-waste" placeholder="Enter Waste" step="0.01">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <label for="modal-punch-scrap" class="form-label">Punch Scrap (kg)</label>
                 <input type="number" class="form-control" id="modal-punch-scrap" placeholder="Enter Punch Scrap"
                     step="0.01">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <label for="modal-refurbish" class="form-label">Refurbish (kg)</label>
                 <input type="number" class="form-control" id="modal-refurbish" placeholder="Enter Refurbish"
                     step="0.01">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <label for="modal-remaining-coil" class="form-label">Remaining Coil (kg)</label>
                 <input type="number" class="form-control" id="modal-remaining-coil" placeholder="Enter Remaining Coil"
                     step="0.01">
@@ -201,39 +214,45 @@ use yii\widgets\ActiveForm;
     <div class="modal-body">
         <input type="hidden" id="qc-modal-id">
         <div class="row mb-3">
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label>Actual Prod. Date</label>
                 <input type="text" class="form-control" id="qc-actual-date" readonly placeholder="Automatic">
             </div>
-            <div class="col-md-2">
-                <label>Final Result</label>
+            <div class="col-md-3">
+                <label>Final Result (Qty)</label>
                 <input type="number" class="form-control" id="qc-final-prod" readonly placeholder="Automatic">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
+                <label>Final Result (Kg)</label>
+                <input type="number" class="form-control" id="qc-final-prod-weight" readonly placeholder="Automatic">
+            </div>
+            <div class="col-md-3">
                 <label>Waste (kg)</label>
                 <input type="number" class="form-control" id="qc-waste" readonly placeholder="Automatic">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <label>Punch Scrap (kg)</label>
                 <input type="number" class="form-control" id="qc-punch" readonly placeholder="Automatic">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <label>Refurbish (kg)</label>
                 <input type="number" class="form-control" id="qc-refurbish" readonly placeholder="Automatic">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <label>Remaining Coil (kg)</label>
                 <input type="number" class="form-control" id="qc-remaining-coil" readonly placeholder="Automatic">
             </div>
         </div>
 
+        <h4 style="margin-top:30px;">Quality Control</h4>
+        <hr>
         <div class="row mb-3">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="qc-final-result" class="form-label">Final Result QC</label>
                 <input type="number" class="form-control" id="qc-final-result" placeholder="Enter Final Result">
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="qc-reject" class="form-label">Reject QC</label>
                 <input type="number" class="form-control" id="qc-reject" placeholder="Reject Data" readonly>
             </div>
@@ -244,8 +263,8 @@ use yii\widgets\ActiveForm;
                     placeholder="Pilih file di form utama (lihat tabel)">
             </div> -->
         </div>
-        <h4 style="margin-top:50px;">Sample Result</h4>
-        <br>
+        <h4 style="margin-top:30px;">Sample Result</h4>
+        <hr>
         <div class="w-100">
             <div class="d-flex flex-nowrap" style="min-width: max-content;">
                 <?php for ($set = 1; $set <= 6; $set++): ?>
@@ -298,6 +317,7 @@ $('.btn-production').on('click', function () {
     $('#modal-final-result').attr('max', qtyProduction);
 
     $('#modal-final-result').val('');
+    $('#modal-final-result-weight').val('');
     $('#modal-waste').val('');
     $('#modal-punch-scrap').val('');
     $('#modal-refurbish').val('');
@@ -315,6 +335,7 @@ $('#saveProductionDetail').on('click', function () {
     }
     $('input[name="actual_production_date[' + id + ']"]').val($('#modal-actual-production-date').val());
     $('input[name="final_result[' + id + ']"]').val($('#modal-final-result').val());
+    $('input[name="final_result_weight[' + id + ']"]').val($('#modal-final-result-weight').val());
     $('input[name="waste[' + id + ']"]').val($('#modal-waste').val());
     $('input[name="punch_scrap[' + id + ']"]').val($('#modal-punch-scrap').val());
     $('input[name="refurbish[' + id + ']"]').val($('#modal-refurbish').val());
@@ -330,6 +351,7 @@ $('.btn-qc').on('click', function () {
     $('#qcModalLabel').text('Form QC untuk ' + name);
     $('#qc-actual-date').val($('input[name="actual_production_date[' + id + ']"]').val());
     $('#qc-final-prod').val($('input[name="final_result[' + id + ']"]').val());
+    $('#qc-final-prod-weight').val($('input[name="final_result_weight[' + id + ']"]').val());
     $('#qc-waste').val($('input[name="waste[' + id + ']"]').val());
     $('#qc-punch').val($('input[name="punch_scrap[' + id + ']"]').val());
     $('#qc-refurbish').val($('input[name="refurbish[' + id + ']"]').val());

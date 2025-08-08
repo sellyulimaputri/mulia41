@@ -103,7 +103,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td>
                     <button type="button" class="btn btn-primary btn-production" data-id="<?= $detail->id ?>"
                         data-name="<?= $item->item_name ?? '-' ?>" data-actual="<?= $detail->actual_production_date ?>"
-                        data-final="<?= $detail->final_result ?>" data-waste="<?= $detail->waste ?>"
+                        data-final="<?= $detail->final_result ?>"
+                        data-final-weight="<?= $detail->final_result_weight ?>" data-waste="<?= $detail->waste ?>"
                         data-punch="<?= $detail->punch_scrap ?>" data-refurbish="<?= $detail->refurbish ?>"
                         data-remaining="<?= $detail->remaining_coil ?>" data-toggle="modal"
                         data-target="#productionModal">
@@ -116,7 +117,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php for ($s = 1; $s <= 4; $s++): ?>
                         data-sample<?= $s ?>qc<?= $qc ?>="<?= Html::encode($detail["sample_result_{$s}_qc_{$qc}"]) ?>"
                         <?php endfor; ?> <?php endfor; ?> data-actual="<?= $detail->actual_production_date ?>"
-                        data-final="<?= $detail->final_result ?>" data-waste="<?= $detail->waste ?>"
+                        data-final="<?= $detail->final_result ?>"
+                        data-final-weight="<?= $detail->final_result_weight ?>" data-waste="<?= $detail->waste ?>"
                         data-punch="<?= $detail->punch_scrap ?>" data-refurbish="<?= $detail->refurbish ?>"
                         data-remaining="<?= $detail->remaining_coil ?>" data-document="<?= $detail->document_qc ?>"
                         data-toggle="modal" data-target="#qcModal">
@@ -194,37 +196,42 @@ $this->params['breadcrumbs'][] = $this->title;
         <input type="hidden" id="modal-id" name="modal-id">
 
         <div class="row mb-3">
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label for="modal-actual-production-date" class="form-label">Actual Production Date</label>
                 <input type="date" class="form-control" id="modal-actual-production-date" readonly
                     placeholder="Nothing">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-3">
 
-                <label for="modal-final-result" class="form-label">Final Result</label>
+                <label for="modal-final-result" class="form-label">Final Result (Qty)</label>
                 <input type="number" class="form-control" id="modal-final-result" readonly placeholder="Nothing">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-3">
+
+                <label for="modal-final-result-weight" class="form-label">Final Result (Kg)</label>
+                <input type="number" class="form-control" id="modal-final-result-weight" readonly placeholder="Nothing">
+            </div>
+            <div class="col-md-3">
 
                 <label for="modal-waste" class="form-label">Waste (kg)</label>
                 <input type="number" class="form-control" id="modal-waste" readonly placeholder="Nothing">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-4">
 
                 <label for="modal-punch-scrap" class="form-label">Punch Scrap (kg)</label>
                 <input type="number" class="form-control" id="modal-punch-scrap" readonly placeholder="Nothing">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-4">
 
                 <label for="modal-refurbish" class="form-label">Refurbish (kg)</label>
                 <input type="number" class="form-control" id="modal-refurbish" readonly placeholder="Nothing">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-4">
 
                 <label for="modal-remaining-coil" class="form-label">Remaining Coil (kg)</label>
                 <input type="number" class="form-control" id="modal-remaining-coil" readonly placeholder="Nothing">
@@ -243,42 +250,48 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="modal-body">
         <input type="hidden" id="qc-id">
         <div class="row mb-3">
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label>Actual Prod. Date</label>
                 <input type="text" class="form-control" id="qc-actual-date" readonly placeholder="Nothing">
             </div>
-            <div class="col-md-2">
-                <label>Final Result</label>
+            <div class="col-md-3">
+                <label>Final Result (Qty)</label>
                 <input type="number" class="form-control" id="qc-final-prod" readonly placeholder="Nothing">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
+                <label>Final Result (Kg)</label>
+                <input type="number" class="form-control" id="qc-final-prod-weight" readonly placeholder="Nothing">
+            </div>
+            <div class="col-md-3">
                 <label>Waste (kg)</label>
                 <input type="number" class="form-control" id="qc-waste" readonly placeholder="Nothing">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <label>Punch Scrap (kg)</label>
                 <input type="number" class="form-control" id="qc-punch" readonly placeholder="Nothing">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <label>Refurbish (kg)</label>
                 <input type="number" class="form-control" id="qc-refurbish" readonly placeholder="Nothing">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <label>Remaining Coil (kg)</label>
                 <input type="number" class="form-control" id="qc-remaining-coil" readonly placeholder="Nothing">
             </div>
         </div>
 
+        <h4 style="margin-top:30px;">Quality Control</h4>
+        <hr>
         <div class="row mb-3">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="qc-final-result">Final Result QC</label>
                 <input type="number" class="form-control" id="qc-final-result" readonly placeholder="Nothing">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="qc-reject">Reject QC</label>
                 <input type="number" class="form-control" id="qc-reject" readonly placeholder="Nothing">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="form-group">
                     <label for="qc-document" class="font-weight-bold">Dokumen QC</label>
                     <div class="input-group">
@@ -294,6 +307,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
         </div>
+
+        <h4 style="margin-top:30px;">Sample Result</h4>
+        <hr>
         <div class="container-fluid px-0">
             <div class="d-flex flex-wrap justify-content-between">
                 <?php for ($qc = 1; $qc <= 6; $qc++): ?>
@@ -338,6 +354,7 @@ $('.btn-production').on('click', function () {
     var name = $(this).data('name');
     var actual = $(this).data('actual');
     var final = $(this).data('final');
+    var finalWeight = $(this).data('final-weight');
     var waste = $(this).data('waste');
     var punch = $(this).data('punch');
     var refurbish = $(this).data('refurbish');
@@ -346,6 +363,7 @@ $('.btn-production').on('click', function () {
     $('#modal-id').val(id);
     $('#modal-actual-production-date').val(actual);
     $('#modal-final-result').val(final);
+    $('#modal-final-result-weight').val(finalWeight);
     $('#modal-waste').val(waste);
     $('#modal-punch-scrap').val(punch);
     $('#modal-refurbish').val(refurbish);
@@ -359,6 +377,7 @@ $('.btn-qc').on('click', function () {
     var name = $(this).data('name');
     var actual = $(this).data('actual');
     var final = $(this).data('final');
+    var finalWeight = $(this).data('final-weight');
     var waste = $(this).data('waste');
     var punch = $(this).data('punch');
     var refurbish = $(this).data('refurbish');
@@ -381,6 +400,7 @@ $('.btn-qc').on('click', function () {
     
     $('#qc-actual-date').val(actual);
     $('#qc-final-prod').val(final);
+    $('#qc-final-prod-weight').val(finalWeight);
     $('#qc-waste').val(waste);
     $('#qc-punch').val(punch);
     $('#qc-refurbish').val(refurbish);

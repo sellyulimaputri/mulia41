@@ -39,7 +39,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'no_planning',
             [
                 'attribute' => 'id_so',
-                'label' => 'Sales Order',
                 'value' => function ($model) {
                     return $model->so->no_so;
                 },

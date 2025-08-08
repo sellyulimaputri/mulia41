@@ -59,9 +59,9 @@ class ReleaseRawMaterialRollForming extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'no_release' => 'No Release',
-            'id_so' => 'No Sales Order',
+            'id_so' => 'Code Project',
             'id_worf' => 'No Working Order',
-            'so_date' => 'Sales Order Date',
+            'so_date' => 'Project Date',
             'worf_date' => 'Production Date',
             'type_production' => 'Type Production',
             'notes' => 'Notes',

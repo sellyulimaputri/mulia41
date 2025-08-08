@@ -76,13 +76,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             'description',
+            'steel_grade',
             [
                 'attribute' => 'length',
                 'value' => function ($model) {
                     return $model->length . ' mm';
                 },
             ],
-
             'qty',
             [
                 'attribute' => 'harga',

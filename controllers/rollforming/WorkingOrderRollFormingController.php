@@ -132,7 +132,8 @@ class WorkingOrderRollFormingController extends Controller
     {
         $model = new WorkingOrderRollForming();
         $model->type_production = 1;
-        $model->no_planning = Yii::$app->request->get('no_planning', '');
+        $model->no_planning = WorkingOrderRollForming::generateNoPlanning();        
+        // $model->no_planning = Yii::$app->request->get('no_planning', '');
         $model->production_date = Yii::$app->request->get('production_date', '');
 
         if ($id_so !== null) {

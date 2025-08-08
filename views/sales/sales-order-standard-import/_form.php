@@ -16,12 +16,15 @@ use app\models\master\MasterCustomer;
 <div class="sales-order-standard-form">
 
     <?php $form = ActiveForm::begin([
+        'enableAjaxValidation' => true,
+        'validateOnChange' => true,
+        'validateOnType' => true,
         'options' => ['enctype' => 'multipart/form-data']
     ]); ?>
 
     <div class="row">
         <div class="col-md-2">
-            <?= $form->field($model, 'no_so')->textInput(['maxlength' => true,'placeholder' => 'Enter No Sales Order']) ?>
+            <?= $form->field($model, 'no_so')->textInput(['maxlength' => true, 'placeholder' => 'Enter Code Project']) ?>
         </div>
 
         <div class="col-md-2">

@@ -21,6 +21,7 @@ use app\models\master\MasterTypeProduksi;
  * @property float $harga
  * @property float $total
  * @property int $id_header
+ * @property string $steel_grade
  *
  * @property SalesOrderStandard $header
  * @property MasterItem $item
@@ -50,7 +51,7 @@ class SalesOrderStandardDetail extends \yii\db\ActiveRecord
             [['id_item', 'type_produksi', 'id_raw_material', 'id_header'], 'integer'],
             [['id_raw_material'], 'default', 'value' => null],
             [['length', 'qty', 'harga', 'total'], 'number'],
-            [['description'], 'string', 'max' => 255],
+            [['description','steel_grade'], 'string', 'max' => 255],
             [['id_header'], 'exist', 'skipOnError' => true, 'targetClass' => SalesOrderStandard::class, 'targetAttribute' => ['id_header' => 'id']],
             [['id_item'], 'exist', 'skipOnError' => true, 'targetClass' => MasterItem::class, 'targetAttribute' => ['id_item' => 'id']],
             [['id_raw_material'], 'exist', 'skipOnError' => true, 'targetClass' => MasterRawMaterial::class, 'targetAttribute' => ['id_raw_material' => 'id']],
@@ -73,6 +74,7 @@ class SalesOrderStandardDetail extends \yii\db\ActiveRecord
             'harga' => 'Harga',
             'total' => 'Total',
             'id_header' => 'Id Header',
+            'steel_grade' => 'Steel Grade',
         ];
     }
 

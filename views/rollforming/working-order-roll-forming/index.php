@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attribute' => 'id_so',
                     'items' => \app\models\sales\SalesOrderStandard::getDropdownList(),
                     'options' => ['class' => 'form-control'],
-                    'prompt' => 'All Sales Order',
+                    'prompt' => 'All Code Project',
                 ]),
             ],
             [

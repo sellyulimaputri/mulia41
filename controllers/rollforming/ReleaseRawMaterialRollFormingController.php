@@ -80,6 +80,7 @@ class ReleaseRawMaterialRollFormingController extends Controller
         }
 
         $model = new ReleaseRawMaterialRollForming(['id_worf' => $id_worf]);
+        $model->no_release = $workingOrder->no_planning;
         $model->initializeFromWorkingOrder();
         $details = $model->getWorfDetails();
 

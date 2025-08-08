@@ -45,6 +45,7 @@ class SalesOrderStandard extends \yii\db\ActiveRecord
             [['tanggal', 'deliver_date'], 'safe'],
             [['id_customer'], 'integer'],
             [['no_so'], 'string', 'max' => 255],
+            [['no_so'], 'unique', 'message' => 'Project Code is already in use.'],
             [['id_customer'], 'exist', 'skipOnError' => true, 'targetClass' => BusinessPartner::class, 'targetAttribute' => ['id_customer' => 'id']],
         ];
     }
@@ -56,8 +57,8 @@ class SalesOrderStandard extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'no_so' => 'No Sales Order',
-            'tanggal' => 'Date',
+            'no_so' => 'Code Project',
+            'tanggal' => 'Project Date',
             'id_customer' => 'Customer',
             'deliver_date' => 'Delivery Date',
         ];
@@ -133,6 +134,7 @@ class SalesOrderStandard extends \yii\db\ActiveRecord
                         'total' => $this->normalizeNumber($row[12]),
                         'harga' => $this->normalizeNumber($row[10]),
                         'id_header' => $this->id,
+                        'steel_grade' => (string) $row[15],
                     ]);
 
                     if (!$detail->save()) {

@@ -12,6 +12,7 @@ use Yii;
  * @property int $id_worf_detail
  * @property string $actual_production_date
  * @property float $final_result
+ * @property float $final_result_weight
  * @property float $waste
  * @property float $punch_scrap
  * @property float $refurbish
@@ -74,6 +75,7 @@ class ProductionRollFormingDetail extends \yii\db\ActiveRecord
             [['actual_production_date', 'document_qc'], 'safe'],
             [[
                 'final_result',
+                'final_result_weight',
                 'waste',
                 'punch_scrap',
                 'refurbish',
@@ -120,7 +122,8 @@ class ProductionRollFormingDetail extends \yii\db\ActiveRecord
             'id_header' => 'Id Header',
             'id_worf_detail' => 'Id Worf Detail',
             'actual_production_date' => 'Actual Production Date',
-            'final_result' => 'Final Result',
+            'final_result' => 'Final Result (Qty)',
+            'final_result_weight' => 'Final Result (Kg)',
             'waste' => 'Waste',
             'punch_scrap' => 'Punch Scrap',
             'refurbish' => 'Refurbish',

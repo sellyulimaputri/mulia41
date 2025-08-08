@@ -92,6 +92,7 @@ class ProductionRollFormingController extends Controller
         }
 
         $model = new ProductionRollForming(['id_worf' => $id_worf]);
+        $model->no_production = $workingOrder->no_planning . '/RF';
         $model->initializeFromWorkingOrder();
 
         $details = $model->getWorfDetails();

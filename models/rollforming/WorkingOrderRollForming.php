@@ -56,8 +56,8 @@ class WorkingOrderRollForming extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'no_planning' => 'No Planning',
-            'id_so' => 'No Sales Order',
-            'so_date' => 'Sales Order Date',
+            'id_so' => 'Code Project',
+            'so_date' => 'Project Date',
             'production_date' => 'Production Date',
             'type_production' => 'Type Production',
             'notes' => 'Notes',
@@ -186,5 +186,26 @@ class WorkingOrderRollForming extends \yii\db\ActiveRecord
                 return $model->no_planning;
             }
         );
+    }
+
+    public static function generateNoPlanning()
+    {
+        $prefix = 'WO/';
+        $currentYearMonth = date('ym'); // YYMM
+        $likePattern = $prefix . $currentYearMonth . '/%';
+
+        $lastPlanning = static::find()
+            ->where(['like', 'no_planning', $likePattern, false])
+            ->orderBy(['no_planning' => SORT_DESC])
+            ->one();
+
+        if ($lastPlanning) {
+            $lastNumber = (int)substr($lastPlanning->no_planning, -4);
+            $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $nextNumber = '0001';
+        }
+
+        return $prefix . $currentYearMonth . '/' . $nextNumber;
     }
 }

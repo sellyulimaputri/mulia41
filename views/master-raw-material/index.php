@@ -40,6 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             'item_name',
+            'item_code',
             [
                 'attribute' => 'uom',
                 'value' => function ($model){

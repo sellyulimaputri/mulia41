@@ -62,9 +62,9 @@ class ProductionRollForming extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'no_production' => 'No Production',
-            'id_so' => 'No Sales Order',
+            'id_so' => 'Code Project',
             'id_worf' => 'No Working Order',
-            'so_date' => 'Sales Order Date',
+            'so_date' => 'Project Date',
             'production_date' => 'Production Date',
             'type_production' => 'Type Production',
             'notes' => 'Notes',
@@ -153,6 +153,7 @@ class ProductionRollForming extends \yii\db\ActiveRecord
     {
         $postProductionDates = Yii::$app->request->post('actual_production_date', []);
         $postFinalResults = Yii::$app->request->post('final_result', []);
+        $postFinalResultsWeight = Yii::$app->request->post('final_result_weight', []);
         $postWastes = Yii::$app->request->post('waste', []);
         $postPunchScraps = Yii::$app->request->post('punch_scrap', []);
         $postRefurbishes = Yii::$app->request->post('refurbish', []);
@@ -178,6 +179,7 @@ class ProductionRollForming extends \yii\db\ActiveRecord
             // Assign values from POST
             $detail->actual_production_date = $postProductionDates[$worfDetailId] ?? null;
             $detail->final_result = $postFinalResults[$worfDetailId] ?? 0;
+            $detail->final_result_weight = $postFinalResultsWeight[$worfDetailId] ?? 0;
             $detail->waste = $postWastes[$worfDetailId] ?? 0;
             $detail->punch_scrap = $postPunchScraps[$worfDetailId] ?? 0;
             $detail->refurbish = $postRefurbishes[$worfDetailId] ?? 0;

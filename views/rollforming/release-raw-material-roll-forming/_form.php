@@ -16,7 +16,7 @@ use app\widgets\SearchableSelect;
 
     <div class="row">
         <div class="col-md-2">
-            <?= $form->field($model, 'no_release')->textInput(['maxlength' => true, 'placeholder' => 'Enter No Release']) ?>
+            <?= $form->field($model, 'no_release')->textInput(['maxlength' => true, 'placeholder' => 'Enter No Release', 'readonly' => true]) ?>
         </div>
 
         <div class="col-md-2">
@@ -55,6 +55,7 @@ use app\widgets\SearchableSelect;
                 <th>Length (mm)</th>
                 <th>Reference Max Release</th>
                 <th>Qty Produksi</th>
+                <th>Uom</th>
                 <th>Scanned</th>
                 <th>Total Berat Scan</th>
                 <th>Action</th>
@@ -63,40 +64,44 @@ use app\widgets\SearchableSelect;
         <tbody>
         <tbody>
             <?php foreach ($details as $i => $detail): ?>
-                <tr>
-                    <td><?= $i + 1 ?></td>
-                    <td><?= $detail->soDetail->item->item_name ?? '-' ?></td>
-                    <td><?= $detail->soDetail->item->rawMaterial->item_name ?? '-' ?></td>
-                    <td><?= $detail->soDetail->length ?? '-' ?></td>
-                    <?php
+            <tr>
+                <td><?= $i + 1 ?></td>
+                <td><?= $detail->soDetail->item->item_name ?? '-' ?></td>
+                <td><?= $detail->soDetail->item->rawMaterial->item_name ?? '-' ?></td>
+                <td><?= $detail->soDetail->length ?? '-' ?></td>
+                <?php
                     $refRelease = ceil((($detail->soDetail->length ?? 0) * ($detail->quantity_production ?? 0)) / ($detail->soDetail->item->rawMaterial->weight ?? 1));
                     ?>
-                    <td><?= Yii::$app->formatter->asDecimal($refRelease, 0) ?></td>
+                <td><?= Yii::$app->formatter->asDecimal($refRelease, 0) ?></td>
 
-                    <td><?= $detail->quantity_production ?></td>
-                    <td>
-                        <ul id="scanned-id-list-<?= $i ?>" class="list-group"></ul>
-                        <!-- Akan ditambahkan dinamis lewat JS -->
-                        <div id="scanned_ids_<?= $i ?>"></div>
+                <td><?= $detail->quantity_production ?></td>
 
-                    </td>
-                    <td><span id="total-berat-<?= $i ?>">0</span></td> <!-- Tambah ini di masing-masing baris detail -->
+                <td>
+                    <?= ($rm = $detail->soDetail->item->rawMaterial) && ($uom = \app\models\MasterUom::findOne($rm->uom)) ? $uom->nama : '-' ?>
+                </td>
+                <td>
+                    <ul id="scanned-id-list-<?= $i ?>" class="list-group"></ul>
+                    <!-- Akan ditambahkan dinamis lewat JS -->
+                    <div id="scanned_ids_<?= $i ?>"></div>
 
-                    <td>
-                        <div>
-                            <button type="button" class="btn btn-xs btn-success btn-open-scanner"
-                                data-index="<?= $i ?>">Scan
-                                QR</button>
-                            <button type="button" class="btn btn-xs btn-info btn-view-detail"
-                                data-index="<?= $i ?>">View</button>
-                        </div>
-                    </td>
+                </td>
+                <td><span id="total-berat-<?= $i ?>">0</span></td> <!-- Tambah ini di masing-masing baris detail -->
+
+                <td>
+                    <div>
+                        <button type="button" class="btn btn-xs btn-success btn-open-scanner"
+                            data-index="<?= $i ?>">Scan
+                            QR</button>
+                        <button type="button" class="btn btn-xs btn-info btn-view-detail"
+                            data-index="<?= $i ?>">View</button>
+                    </div>
+                </td>
 
 
-                </tr>
-                <input type="hidden" id="expected-id-item-<?= $i ?>" value="<?= $detail->soDetail->item->id ?>">
+            </tr>
+            <input type="hidden" id="expected-id-item-<?= $i ?>" value="<?= $detail->soDetail->item->id ?>">
 
-                <input type="hidden" name="Detail[<?= $i ?>][id_worf_detail]" value="<?= $detail->id ?>" />
+            <input type="hidden" name="Detail[<?= $i ?>][id_worf_detail]" value="<?= $detail->id ?>" />
             <?php endforeach; ?>
         </tbody>
 
